@@ -1,4 +1,4 @@
-package main
+package apns
 
 import (
 	"github.com/sideshow/apns2"

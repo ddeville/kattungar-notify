@@ -1,13 +1,18 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	"github.com/ddeville/kattungar_notify/server"
+	"github.com/ddeville/kattungar_notify/store"
+)
 
 func main() {
-	store, err := NewStore("/home/damien/Downloads/store.db")
+	store, err := store.NewStore("/home/damien/Downloads/store.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s := NewServer(store, 3000)
+	s := server.NewServer(store, 3000)
 	s.Serve()
 }

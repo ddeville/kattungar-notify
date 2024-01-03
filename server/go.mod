@@ -1,4 +1,4 @@
-module kattungar-notify
+module github.com/ddeville/kattungar_notify
 
 go 1.21.5
 

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -8,15 +8,17 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/ddeville/kattungar_notify/store"
 )
 
 type Server struct {
 	router *chi.Mux
-	store  *Store
+	store  *store.Store
 	port   int
 }
 
-func NewServer(store *Store, port int) Server {
+func NewServer(store *store.Store, port int) Server {
 	r := chi.NewRouter()
 	s := Server{r, store, port}
 
@@ -61,7 +63,7 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
-	var device Device
+	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -90,7 +92,7 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
-	var device Device
+	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -116,7 +118,7 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
-	var device Device
+	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

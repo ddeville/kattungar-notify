@@ -1,4 +1,4 @@
-package main
+package store
 
 type Device struct {
 	Id    int64  `json:"id"`
