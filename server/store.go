@@ -40,7 +40,9 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 	return &Device{id, device.Name, device.Token}, nil
 }
 
-func (s *Store) DeleteDevice(id int64) {
+func (s *Store) DeleteDevice(device Device) error {
+	_, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
+	return err
 }
 
 func (s *Store) UpdateDevice(device Device) {
