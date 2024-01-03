@@ -36,7 +36,7 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 	return &ApnsClient{client, cfg}, nil
 }
 
-func (c *ApnsClient) Push(device store.Device, payload *payload.Payload) (*apns2.Response, error) {
+func (c *ApnsClient) Push(device *store.Device, payload *payload.Payload) (*apns2.Response, error) {
 	notification := &apns2.Notification{
 		Topic:       c.cfg.AppId,
 		DeviceToken: device.Token,
