@@ -40,14 +40,38 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 	return &Device{id, device.Name, device.Token}, nil
 }
 
-func (s *Store) DeleteDevice(device Device) error {
-	_, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
-	return err
+func (s *Store) DeleteDevice(device Device) (bool, error) {
+	res, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
+	if err != nil {
+		return false, err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if num == 0 {
+		return false, nil
+	}
+
+	return true, err
 }
 
-func (s *Store) UpdateDevice(device Device) error {
-	_, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
-	return err
+func (s *Store) UpdateDevice(device Device) (bool, error) {
+	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
+	if err != nil {
+		return false, err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if num == 0 {
+		return false, nil
+	}
+
+	return true, err
 }
 
 func (s *Store) ListDevices() ([]Device, error) {

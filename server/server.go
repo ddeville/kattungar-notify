@@ -69,6 +69,11 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if device.Id != 0 {
+		http.Error(w, "cannot pass device ID", http.StatusBadRequest)
+		return
+	}
+
 	d, err := s.store.CreateDevice(device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -98,9 +103,13 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.store.UpdateDevice(device)
+	found, err := s.store.UpdateDevice(device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !found {
+		http.Error(w, "cannot find device", http.StatusNotFound)
 		return
 	}
 
@@ -115,9 +124,13 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.store.DeleteDevice(device)
+	found, err := s.store.DeleteDevice(device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !found {
+		http.Error(w, "cannot find device", http.StatusNotFound)
 		return
 	}
 
