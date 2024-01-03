@@ -1,8 +1,6 @@
 package main
 
-import (
-	"log"
-)
+import "log"
 
 func main() {
 	store, err := NewStore()
