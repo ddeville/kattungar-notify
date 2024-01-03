@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -10,8 +11,8 @@ type Store struct {
 	db *sql.DB
 }
 
-func NewStore() (*Store, error) {
-	db, err := sql.Open("sqlite3", ":memory:")
+func NewStore(dbPath string) (*Store, error) {
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?cache=shared&mode=rwc", dbPath))
 	if err != nil {
 		return nil, err
 	}
@@ -25,12 +26,24 @@ func NewStore() (*Store, error) {
 	return &Store{db}, nil
 }
 
-func (s *Store) AddDevice(device Device) error {
-	_, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
-	return err
+func (s *Store) CreateDevice(device Device) (*Device, error) {
+	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Device{id, device.Name, device.Token}, nil
 }
 
-func (s *Store) DeleteDevice(id string) {
+func (s *Store) DeleteDevice(id int64) {
+}
+
+func (s *Store) UpdateDevice(device Device) {
 }
 
 func (s *Store) ListDevices() ([]Device, error) {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -19,13 +20,23 @@ func NewServer(store *Store, port int) Server {
 	s := Server{chi.NewRouter(), store, port}
 	r := s.router
 
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("Welcome to Kattungar Notify!"))
 	})
-	r.Get("/list_devices", s.listDevices)
-	r.Post("/add_device", s.addDevice)
+
+	r.Route("/devices", func(r chi.Router) {
+		r.Get("/", s.listDevices)
+		r.Post("/", s.createDevice)
+		r.Delete("/", s.deleteDevice)
+		r.Put("/", s.updateDevice)
+	})
 
 	return s
 }
@@ -37,13 +48,20 @@ func (s *Server) Serve() {
 func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 	devices, err := s.store.ListDevices()
 	if err != nil {
-		w.WriteHeader(500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "%v", devices)
+
+	jsonData, err := json.Marshal(devices)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
 
-func (s *Server) addDevice(w http.ResponseWriter, r *http.Request) {
+func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 	var device Device
 
 	err := json.NewDecoder(r.Body).Decode(&device)
@@ -52,11 +70,24 @@ func (s *Server) addDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.store.AddDevice(device)
+	d, err := s.store.CreateDevice(device)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	jsonData, err := json.Marshal(d)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	w.Write(jsonData)
+}
+
+func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
+}
+
+func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 }

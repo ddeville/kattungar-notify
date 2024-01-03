@@ -3,7 +3,7 @@ package main
 import "log"
 
 func main() {
-	store, err := NewStore()
+	store, err := NewStore("/home/damien/Downloads/store.db")
 	if err != nil {
 		log.Fatal(err)
 	}
