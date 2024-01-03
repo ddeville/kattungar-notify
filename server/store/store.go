@@ -17,7 +17,10 @@ func NewStore(dbPath string) (*Store, error) {
 		return nil, err
 	}
 
-	sqlStmt := `CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT UNIQUE, token TEXT);`
+	sqlStmt := `
+	CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT UNIQUE, token TEXT);
+	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_name TEXT, title TEXT, subtitle TEXT, body TEXT);
+	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return nil, err
@@ -54,6 +57,19 @@ func (s *Store) ListDevices() ([]Device, error) {
 	}
 
 	return devices, nil
+}
+
+func (s *Store) GetDevice(name string) (*Device, error) {
+	var device Device
+	row := s.db.QueryRow("SELECT id, name, token FROM device WHERE name = ?", name)
+	err := row.Scan(&device.Id, &device.Name, &device.Token)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &device, nil
 }
 
 func (s *Store) CreateDevice(device Device) (*Device, error) {
@@ -111,4 +127,15 @@ func IsExistingDeviceError(err error) bool {
 		}
 	}
 	return false
+}
+
+func (s *Store) RecordNotification(notification Notification) error {
+	_, err := s.db.Exec(
+		"INSERT INTO notification (device_name, title, subtitle, body) VALUES (?, ?, ?, ?)",
+		notification.DeviceName,
+		notification.Title,
+		notification.Subtitle,
+		notification.Body,
+	)
+	return err
 }

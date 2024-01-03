@@ -11,7 +11,7 @@ import (
 const serverPort = 3000
 
 const teamId = "Q8B696Y8U4"
-const appId = "com.ddeville.kattungar_notify"
+const appId = "com.ddeville.kattungar-notify"
 
 func main() {
 	store, err := store.NewStore("/home/damien/Downloads/store.db")

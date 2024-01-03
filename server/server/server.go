@@ -153,4 +153,36 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
+	var notification store.Notification
+	err := json.NewDecoder(r.Body).Decode(&notification)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if len(notification.DeviceName) == 0 {
+		http.Error(w, "missing device name", http.StatusBadRequest)
+		return
+	}
+
+	if len(notification.Title) == 0 && len(notification.Subtitle) == 0 {
+		http.Error(w, "missing title or subtitle", http.StatusBadRequest)
+		return
+	}
+
+	device, err := s.store.GetDevice(notification.DeviceName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if device == nil {
+		http.Error(w, "unknown device name", http.StatusBadRequest)
+		return
+	}
+
+	err = s.store.RecordNotification(notification)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
