@@ -45,8 +45,9 @@ func (s *Store) DeleteDevice(device Device) error {
 	return err
 }
 
-func (s *Store) UpdateDevice(device Device) {
-	// TODO(damien): Implement device update
+func (s *Store) UpdateDevice(device Device) error {
+	_, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
+	return err
 }
 
 func (s *Store) ListDevices() ([]Device, error) {

@@ -63,7 +63,6 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 	var device Device
-
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -87,12 +86,29 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
-	// TODO(damien): Implement device update
+	var device Device
+	err := json.NewDecoder(r.Body).Decode(&device)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if device.Id == 0 {
+		http.Error(w, "missing device ID", http.StatusBadRequest)
+		return
+	}
+
+	err = s.store.UpdateDevice(device)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 	var device Device
-
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
