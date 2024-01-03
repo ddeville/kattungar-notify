@@ -41,6 +41,8 @@ func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
 		r.Delete("/", s.deleteDevice)
 	})
 
+	r.Post("/notify", s.notify)
+
 	return s
 }
 
@@ -148,4 +150,7 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 }
