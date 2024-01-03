@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/ddeville/kattungar_notify/apns"
-	"github.com/ddeville/kattungar_notify/server"
-	"github.com/ddeville/kattungar_notify/store"
+	"github.com/ddeville/kattungar-notify/apns"
+	"github.com/ddeville/kattungar-notify/server"
+	"github.com/ddeville/kattungar-notify/store"
 )
 
 const serverPort = 3000

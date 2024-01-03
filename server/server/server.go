@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/ddeville/kattungar_notify/apns"
-	"github.com/ddeville/kattungar_notify/store"
+	"github.com/ddeville/kattungar-notify/apns"
+	"github.com/ddeville/kattungar-notify/store"
 )
 
 type Server struct {
