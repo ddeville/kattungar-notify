@@ -17,7 +17,7 @@ func NewStore(dbPath string) (*Store, error) {
 		return nil, err
 	}
 
-	sqlStmt := `CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT, token TEXT);`
+	sqlStmt := `CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT UNIQUE, token TEXT);`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return nil, err
