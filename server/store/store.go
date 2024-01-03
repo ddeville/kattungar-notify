@@ -49,6 +49,10 @@ func (s *Store) ListDevices() ([]Device, error) {
 		return nil, err
 	}
 
+	if devices == nil {
+		devices = make([]Device, 0)
+	}
+
 	return devices, nil
 }
 
