@@ -35,6 +35,8 @@ func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
 		w.Write([]byte("Welcome to Kattungar Notify!"))
 	})
 
+	// TODO(damien): Add appropriate auth
+
 	r.Route("/devices", func(r chi.Router) {
 		r.Get("/", s.listDevices)
 		r.Post("/", s.createDevice)
