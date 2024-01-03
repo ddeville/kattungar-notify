@@ -87,6 +87,7 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
+	// TODO(damien): Implement device update
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {

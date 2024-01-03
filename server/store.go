@@ -46,6 +46,7 @@ func (s *Store) DeleteDevice(device Device) error {
 }
 
 func (s *Store) UpdateDevice(device Device) {
+	// TODO(damien): Implement device update
 }
 
 func (s *Store) ListDevices() ([]Device, error) {
