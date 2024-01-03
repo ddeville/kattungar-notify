@@ -34,8 +34,8 @@ func NewServer(store *Store, port int) Server {
 	r.Route("/devices", func(r chi.Router) {
 		r.Get("/", s.listDevices)
 		r.Post("/", s.createDevice)
-		r.Delete("/", s.deleteDevice)
 		r.Put("/", s.updateDevice)
+		r.Delete("/", s.deleteDevice)
 	})
 
 	return s

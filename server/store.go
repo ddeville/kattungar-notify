@@ -26,54 +26,6 @@ func NewStore(dbPath string) (*Store, error) {
 	return &Store{db}, nil
 }
 
-func (s *Store) CreateDevice(device Device) (*Device, error) {
-	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
-	if err != nil {
-		return nil, err
-	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-
-	return &Device{id, device.Name, device.Token}, nil
-}
-
-func (s *Store) DeleteDevice(device Device) (bool, error) {
-	res, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
-	if err != nil {
-		return false, err
-	}
-
-	num, err := res.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	if num == 0 {
-		return false, nil
-	}
-
-	return true, err
-}
-
-func (s *Store) UpdateDevice(device Device) (bool, error) {
-	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
-	if err != nil {
-		return false, err
-	}
-
-	num, err := res.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-	if num == 0 {
-		return false, nil
-	}
-
-	return true, err
-}
-
 func (s *Store) ListDevices() ([]Device, error) {
 	rows, err := s.db.Query("SELECT id, name, token FROM device")
 	if err != nil {
@@ -98,4 +50,52 @@ func (s *Store) ListDevices() ([]Device, error) {
 	}
 
 	return devices, nil
+}
+
+func (s *Store) CreateDevice(device Device) (*Device, error) {
+	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Device{id, device.Name, device.Token}, nil
+}
+
+func (s *Store) UpdateDevice(device Device) (bool, error) {
+	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
+	if err != nil {
+		return false, err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if num == 0 {
+		return false, nil
+	}
+
+	return true, err
+}
+
+func (s *Store) DeleteDevice(device Device) (bool, error) {
+	res, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
+	if err != nil {
+		return false, err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if num == 0 {
+		return false, nil
+	}
+
+	return true, err
 }
