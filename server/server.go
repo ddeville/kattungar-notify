@@ -17,8 +17,8 @@ type Server struct {
 }
 
 func NewServer(store *Store, port int) Server {
-	s := Server{chi.NewRouter(), store, port}
-	r := s.router
+	r := chi.NewRouter()
+	s := Server{r, store, port}
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
