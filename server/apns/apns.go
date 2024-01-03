@@ -8,11 +8,11 @@ import (
 const teamId = "Q8B696Y8U4"
 const keyId = "SZQY3SP3XB"
 
-type Client struct {
+type ApnsClient struct {
 	inner *apns2.Client
 }
 
-func NewClient(keyPath string) (*Client, error) {
+func NewApnsClient(keyPath string) (*ApnsClient, error) {
 	authKey, err := token.AuthKeyFromFile(keyPath)
 	if err != nil {
 		return nil, err
@@ -25,5 +25,5 @@ func NewClient(keyPath string) (*Client, error) {
 	}
 
 	client := apns2.NewTokenClient(token)
-	return &Client{client}, nil
+	return &ApnsClient{client}, nil
 }

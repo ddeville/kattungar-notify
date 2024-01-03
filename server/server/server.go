@@ -9,18 +9,20 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/ddeville/kattungar_notify/apns"
 	"github.com/ddeville/kattungar_notify/store"
 )
 
 type Server struct {
+	port   int
 	router *chi.Mux
 	store  *store.Store
-	port   int
+	apns   *apns.ApnsClient
 }
 
-func NewServer(store *store.Store, port int) Server {
+func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
 	r := chi.NewRouter()
-	s := Server{r, store, port}
+	s := Server{port, r, store, apns}
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
