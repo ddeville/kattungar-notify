@@ -62,6 +62,7 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(jsonData)
+	w.Header().Set("Content-Type", "application/json")
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +80,11 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 
 	d, err := s.store.CreateDevice(device)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if store.IsExistingDeviceError(err) {
+			http.Error(w, "A device with this name already exists", http.StatusConflict)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -91,6 +96,7 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write(jsonData)
+	w.Header().Set("Content-Type", "application/json")
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +114,11 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 
 	found, err := s.store.UpdateDevice(device)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if store.IsExistingDeviceError(err) {
+			http.Error(w, err.Error(), http.StatusConflict)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 	if !found {

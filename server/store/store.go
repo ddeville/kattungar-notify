@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 )
 
 type Store struct {
@@ -57,7 +57,6 @@ func (s *Store) ListDevices() ([]Device, error) {
 }
 
 func (s *Store) CreateDevice(device Device) (*Device, error) {
-	// TODO(damien): Validate that name is unique
 	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
 	if err != nil {
 		return nil, err
@@ -72,7 +71,6 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 }
 
 func (s *Store) UpdateDevice(device Device) (bool, error) {
-	// TODO(damien): Validate that name is unique
 	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
 	if err != nil {
 		return false, err
@@ -104,4 +102,13 @@ func (s *Store) DeleteDevice(device Device) (bool, error) {
 	}
 
 	return true, err
+}
+
+func IsExistingDeviceError(err error) bool {
+	if sqliteErr, ok := err.(sqlite3.Error); ok {
+		if sqliteErr.Code == sqlite3.ErrConstraint && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+			return true
+		}
+	}
+	return false
 }
