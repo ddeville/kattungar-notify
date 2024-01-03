@@ -53,6 +53,7 @@ func (s *Store) ListDevices() ([]Device, error) {
 }
 
 func (s *Store) CreateDevice(device Device) (*Device, error) {
+	// TODO(damien): Validate that name is unique
 	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
 	if err != nil {
 		return nil, err
@@ -67,6 +68,7 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 }
 
 func (s *Store) UpdateDevice(device Device) (bool, error) {
+	// TODO(damien): Validate that name is unique
 	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
 	if err != nil {
 		return false, err
