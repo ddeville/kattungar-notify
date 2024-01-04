@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/mattn/go-sqlite3 v1.14.19
 	github.com/sideshow/apns2 v0.23.0
+	golang.org/x/oauth2 v0.15.0
 	google.golang.org/api v0.154.0
 )
 
@@ -29,7 +30,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/oauth2 v0.15.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
