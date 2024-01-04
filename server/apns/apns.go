@@ -36,11 +36,11 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 	return &ApnsClient{client, cfg}, nil
 }
 
-func (c *ApnsClient) Push(device *store.Device, payload *payload.Payload) (*apns2.Response, error) {
-	notification := &apns2.Notification{
+func (c *ApnsClient) Notify(device *store.Device, notification store.Notification) (*apns2.Response, error) {
+	payload := payload.NewPayload().AlertTitle(notification.Title).AlertSubtitle(notification.Subtitle).AlertBody(notification.Body)
+	return c.inner.Push(&apns2.Notification{
 		Topic:       c.cfg.AppId,
 		DeviceToken: device.Token,
 		Payload:     payload,
-	}
-	return c.inner.Push(notification)
+	})
 }

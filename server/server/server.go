@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/sideshow/apns2/payload"
 
 	"github.com/ddeville/kattungar-notify/apns"
 	"github.com/ddeville/kattungar-notify/store"
@@ -189,8 +188,7 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := payload.NewPayload().AlertTitle(notification.Title).AlertSubtitle(notification.Subtitle).AlertBody(notification.Body)
-	res, err := s.apns.Push(device, payload)
+	res, err := s.apns.Notify(device, notification)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
