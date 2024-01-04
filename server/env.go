@@ -12,6 +12,7 @@ type Config struct {
 	ApnsKeyPath        string `env:"KATTUNGAR_APNS_KEY_PATH"`
 	GoogleCredsPath    string `env:"KATTUNGAR_GOOGLE_CREDS_PATH"`
 	GoogleRefreshToken string `env:"KATTUNGAR_GOOGLE_REFRESH_TOKEN"`
+	GoogleCalendarId   string `env:"KATTUNGAR_GOOGLE_CALENDAR_ID"`
 }
 
 func LoadConfig() (*Config, error) {

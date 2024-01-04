@@ -15,8 +15,6 @@ const serverPort = 3000
 const teamId = "Q8B696Y8U4"
 const appId = "com.ddeville.kattungar-notify"
 
-const calendarId = "family16510554133824391569@group.calendar.google.com"
-
 func main() {
 	cfg, err := LoadConfig()
 	if err != nil {
@@ -41,7 +39,7 @@ func main() {
 	gcal, err := gcal.NewClient(gcal.CalendarConfig{
 		GoogleCredentialsPath: cfg.GoogleCredsPath,
 		GoogleRefreshToken:    cfg.GoogleRefreshToken,
-		CalendarId:            calendarId,
+		CalendarId:            cfg.GoogleCalendarId,
 		ApnsClient:            apns,
 		Store:                 store,
 	})
