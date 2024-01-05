@@ -10,7 +10,7 @@ import (
 	"github.com/ddeville/kattungar-notify/store"
 )
 
-const serverPort = 3000
+const serverPort = 5000
 
 const teamId = "Q8B696Y8U4"
 const appId = "com.ddeville.kattungar-notify"
