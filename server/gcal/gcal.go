@@ -53,7 +53,7 @@ func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
 }
 
 const tickerDuration = 5 * time.Minute
-const eventSpread = 4 * time.Minute
+const eventSpread = 10 * time.Minute
 
 func (c *CalendarClient) Run(ctx context.Context) {
 	ticker := time.NewTicker(tickerDuration)
