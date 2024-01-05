@@ -2,6 +2,7 @@ package gcal
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -26,6 +27,7 @@ type CalendarConfig struct {
 
 type CalendarClient struct {
 	svc                 *calendar.Service
+	apns                *apns.ApnsClient
 	store               *store.Store
 	calendarId          string
 	notifiedEventsCache LRUCache
@@ -50,7 +52,7 @@ func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
 		return nil, err
 	}
 
-	return &CalendarClient{svc, cfg.Store, cfg.CalendarId, NewLRUCache(512)}, nil
+	return &CalendarClient{svc, cfg.ApnsClient, cfg.Store, cfg.CalendarId, NewLRUCache(512)}, nil
 }
 
 const tickerDuration = 5 * time.Minute
@@ -130,8 +132,20 @@ func (c *CalendarClient) checkEvents() {
 }
 
 func (c *CalendarClient) postNotification(event *calendar.Event) {
-	log.Printf("Sending notification for event: %v\n", event.Summary)
 
-	// TODO(damien): Post notification
-	// TODO(damien): Record notification in store
+	devices, err := c.store.ListDevices()
+	if err != nil {
+		log.Printf("Failed to retrieve devices, not sending notification: %v\n", err)
+	}
+
+	for _, device := range devices {
+		log.Printf("Sending notification for event \"%v\" to device %v\n", event.Summary, device.Name)
+		notification := store.Notification{
+			DeviceName: device.Name,
+			Title:      fmt.Sprintf("🗓️ %v", event.Summary),
+		}
+
+		c.apns.Notify(nil, notification)
+		c.store.RecordNotification(notification)
+	}
 }
