@@ -1,8 +1,10 @@
 version: "3"
 services:
   kattungar-notify:
-    build: .
-    image: kattungar-notify
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: kattungar-notify-server
     environment:
       - KATTUNGAR_STORE_PATH=/var/lib/sqlite/store.db
       - KATTUNGAR_APNS_KEY_ID
