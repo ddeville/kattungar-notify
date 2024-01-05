@@ -13,7 +13,7 @@ services:
       - KATTUNGAR_GOOGLE_REFRESH_TOKEN
       - KATTUNGAR_GOOGLE_CALENDAR_ID
     ports:
-      - "25002:5000"
+      - "26002:5000"
     volumes:
       - dbdata:/var/lib/sqlite
       - secrets:/var/lib/secrets
