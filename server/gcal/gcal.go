@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -89,8 +90,22 @@ func (c *CalendarClient) checkEvents() {
 }
 
 func (c *CalendarClient) postNotification(event *calendar.Event) {
-	// TODO(damien): Post notification
-	println(event.Summary)
+	// Look for all-day events and filter them out (they have `Date` set but not `DateTime`)
+	if event.Start != nil && event.Start.DateTime == "" {
+		log.Printf("Skipping all-day event: %v\n", event.Summary)
+		return
+	}
 
+	// Make sure that the event includes the tag in its description
+	if !strings.Contains(event.Description, "#kattungar-notify") {
+		log.Printf("Skipping event that shouldn't be notified: %v\n", event.Summary)
+		return
+	}
+
+	// TODO(damien): Check whether we have notified this event
+
+	log.Printf("Notifying event: %v\n", event.Summary)
+
+	// TODO(damien): Post notification
 	// TODO(damien): Record notification in store
 }
