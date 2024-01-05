@@ -1,0 +1,20 @@
+version: "3"
+services:
+  kattungar-notify:
+    build: .
+    image: kattungar-notify
+    environment:
+      - KATTUNGAR_STORE_PATH=/var/lib/sqlite/store.db
+      - KATTUNGAR_APNS_KEY_ID
+      - KATTUNGAR_APNS_KEY_PATH
+      - KATTUNGAR_GOOGLE_CREDS_PATH
+      - KATTUNGAR_GOOGLE_REFRESH_TOKEN
+      - KATTUNGAR_GOOGLE_CALENDAR_ID
+    ports:
+      - "5000:80"
+    volumes:
+      - dbdata:/var/lib/sqlite
+      - secrets:/var/lib/secrets
+volumes:
+  dbdata:
+  secrets:
