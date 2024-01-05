@@ -26,6 +26,7 @@ type CalendarConfig struct {
 
 type CalendarClient struct {
 	svc                 *calendar.Service
+	store               *store.Store
 	calendarId          string
 	notifiedEventsCache LRUCache
 }
@@ -49,7 +50,7 @@ func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
 		return nil, err
 	}
 
-	return &CalendarClient{svc, cfg.CalendarId, NewLRUCache(512)}, nil
+	return &CalendarClient{svc, cfg.Store, cfg.CalendarId, NewLRUCache(512)}, nil
 }
 
 const tickerDuration = 5 * time.Minute
@@ -116,14 +117,14 @@ func (c *CalendarClient) checkEvents() {
 			continue
 		}
 
-		if c.notifiedEventsCache.Contains(event.Id) {
+		if c.notifiedEventsCache.Contains(event.Id) || c.store.HasNotifiedCalendarEvent(event.Id) {
 			log.Printf("Skipping event that already triggered a notification: %v\n", event.Summary)
 			continue
 		}
 
-		log.Printf(event.Id)
-
 		c.postNotification(event)
+
+		c.store.AddCalendarEvent(event.Id, true)
 		c.notifiedEventsCache.Add(event.Id)
 	}
 }

@@ -12,3 +12,8 @@ type Notification struct {
 	Subtitle   string `json:"subtitle"`
 	Body       string `json:"body"`
 }
+
+type CalendarEvent struct {
+	Id       string `json:"id"`
+	Notified bool   `json:"notified"`
+}

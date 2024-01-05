@@ -22,6 +22,7 @@ func NewStore(dbPath string) (*Store, error) {
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT UNIQUE, token TEXT);
 	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_name TEXT, title TEXT, subtitle TEXT, body TEXT);
+	CREATE TABLE IF NOT EXISTS calendar_event (id INTEGER NOT NULL PRIMARY KEY, event_id TEXT, notified INTEGER);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
@@ -158,4 +159,25 @@ func (s *Store) RecordNotification(notification Notification) error {
 		notification.Body,
 	)
 	return err
+}
+
+func (s *Store) AddCalendarEvent(id string, notified bool) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, err := s.db.Exec("INSERT INTO calendar_event (event_id, notified) VALUES (?, ?)", id, notified)
+	return err
+}
+
+func (s *Store) HasNotifiedCalendarEvent(id string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var notified int
+	row := s.db.QueryRow("SELECT notified FROM calendar_event WHERE event_id = ?", id)
+	err := row.Scan(&notified)
+	if err != nil {
+		return false
+	}
+	return notified != 0
 }
