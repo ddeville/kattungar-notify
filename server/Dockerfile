@@ -1,4 +1,4 @@
-FROM golang:1.21 AS builder
+FROM golang:1.21-bookworm AS builder
 
 WORKDIR /usr/src/kattungar-notify
 
@@ -10,7 +10,7 @@ RUN go build -v -o exe .
 
 ##############
 
-FROM ubuntu:22.04
+FROM debian:bookworm-slim
 
 COPY --from=builder /usr/src/kattungar-notify/exe /usr/local/bin/kattungar-notify
 
