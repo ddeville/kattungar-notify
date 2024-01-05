@@ -4,6 +4,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    pull_policy: build
     image: kattungar-notify-server
     environment:
       - KATTUNGAR_STORE_PATH=/var/lib/sqlite/store.db
