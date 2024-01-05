@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/ddeville/kattungar-notify/apns"
 	"github.com/ddeville/kattungar-notify/gcal"
@@ -16,6 +17,8 @@ const teamId = "Q8B696Y8U4"
 const appId = "com.ddeville.kattungar-notify"
 
 func main() {
+	log.SetOutput(os.Stdout)
+
 	log.Println("Starting server...")
 
 	cfg, err := LoadConfig()
