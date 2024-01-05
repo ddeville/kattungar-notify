@@ -84,27 +84,26 @@ func (c *CalendarClient) checkEvents() {
 	}
 
 	for _, event := range events.Items {
-		// TODO(damien): Check whether we should post a notification for this event
+		// Look for all-day events and filter them out (they have `Date` set but not `DateTime`)
+		if event.Start != nil && event.Start.DateTime == "" {
+			log.Printf("Skipping all-day event: %v\n", event.Summary)
+			return
+		}
+
+		// Make sure that the event includes the tag in its description
+		if !strings.Contains(event.Description, "#kattungar-notify") {
+			log.Printf("Skipping event that doesn't have #kattungar-notify tag: %v\n", event.Summary)
+			return
+		}
+
+		// TODO(damien): Check whether we have already sent a notification for this event
+
 		c.postNotification(event)
 	}
 }
 
 func (c *CalendarClient) postNotification(event *calendar.Event) {
-	// Look for all-day events and filter them out (they have `Date` set but not `DateTime`)
-	if event.Start != nil && event.Start.DateTime == "" {
-		log.Printf("Skipping all-day event: %v\n", event.Summary)
-		return
-	}
-
-	// Make sure that the event includes the tag in its description
-	if !strings.Contains(event.Description, "#kattungar-notify") {
-		log.Printf("Skipping event that shouldn't be notified: %v\n", event.Summary)
-		return
-	}
-
-	// TODO(damien): Check whether we have notified this event
-
-	log.Printf("Notifying event: %v\n", event.Summary)
+	log.Printf("Sending notification for event: %v\n", event.Summary)
 
 	// TODO(damien): Post notification
 	// TODO(damien): Record notification in store
