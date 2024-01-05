@@ -12,6 +12,11 @@ RUN go build -v -o exe .
 
 FROM debian:bookworm-slim
 
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/src/kattungar-notify/exe /usr/local/bin/kattungar-notify
 
 EXPOSE 5000
