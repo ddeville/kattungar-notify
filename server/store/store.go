@@ -3,12 +3,14 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"sync"
 
 	"github.com/mattn/go-sqlite3"
 )
 
 type Store struct {
 	db *sql.DB
+	mu sync.Mutex
 }
 
 func NewStore(dbPath string) (*Store, error) {
@@ -26,10 +28,13 @@ func NewStore(dbPath string) (*Store, error) {
 		return nil, err
 	}
 
-	return &Store{db}, nil
+	return &Store{db: db}, nil
 }
 
 func (s *Store) ListDevices() ([]Device, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	rows, err := s.db.Query("SELECT id, name, token FROM device")
 	if err != nil {
 		return nil, err
@@ -60,6 +65,9 @@ func (s *Store) ListDevices() ([]Device, error) {
 }
 
 func (s *Store) GetDevice(name string) (*Device, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	var device Device
 	row := s.db.QueryRow("SELECT id, name, token FROM device WHERE name = ?", name)
 	err := row.Scan(&device.Id, &device.Name, &device.Token)
@@ -73,6 +81,9 @@ func (s *Store) GetDevice(name string) (*Device, error) {
 }
 
 func (s *Store) CreateDevice(device Device) (*Device, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
 	if err != nil {
 		return nil, err
@@ -87,6 +98,9 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 }
 
 func (s *Store) UpdateDevice(device Device) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
 	if err != nil {
 		return false, err
@@ -104,6 +118,9 @@ func (s *Store) UpdateDevice(device Device) (bool, error) {
 }
 
 func (s *Store) DeleteDevice(device Device) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	res, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
 	if err != nil {
 		return false, err
@@ -130,6 +147,9 @@ func IsExistingDeviceError(err error) bool {
 }
 
 func (s *Store) RecordNotification(notification Notification) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	_, err := s.db.Exec(
 		"INSERT INTO notification (device_name, title, subtitle, body) VALUES (?, ?, ?, ?)",
 		notification.DeviceName,
