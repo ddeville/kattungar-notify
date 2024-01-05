@@ -8,6 +8,7 @@ services:
     image: kattungar-notify-server
     environment:
       - KATTUNGAR_STORE_PATH=/var/lib/sqlite/store.db
+      - KATTUNGAR_SERVER_API_KEYS_PATH
       - KATTUNGAR_APNS_KEY_ID
       - KATTUNGAR_APNS_KEY_PATH
       - KATTUNGAR_GOOGLE_CREDS_PATH

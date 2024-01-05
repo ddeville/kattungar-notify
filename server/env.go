@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	StorePath          string `env:"KATTUNGAR_STORE_PATH"`
+	ServerApiKeysPath  string `env:"KATTUNGAR_SERVER_API_KEYS_PATH"`
 	ApnsKeyId          string `env:"KATTUNGAR_APNS_KEY_ID"`
 	ApnsKeyPath        string `env:"KATTUNGAR_APNS_KEY_PATH"`
 	GoogleCredsPath    string `env:"KATTUNGAR_GOOGLE_CREDS_PATH"`

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -20,7 +21,19 @@ type Server struct {
 	apns   *apns.ApnsClient
 }
 
-func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
+func NewServer(port int, store *store.Store, apns *apns.ApnsClient, apiKeysPath string) (*Server, error) {
+	apiKeysData, err := os.Open(apiKeysPath)
+	if err != nil {
+		return nil, err
+	}
+	defer apiKeysData.Close()
+
+	var apiKeys []string
+	err = json.NewDecoder(apiKeysData).Decode(&apiKeys)
+	if err != nil {
+		return nil, err
+	}
+
 	r := chi.NewRouter()
 	s := Server{port, r, store, apns}
 
@@ -29,12 +42,11 @@ func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(ApiKeyAuth(apiKeys))
 
 	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("Welcome to Kattungar Notify!"))
 	})
-
-	// TODO(damien): Add appropriate auth
 
 	r.Route("/devices", func(r chi.Router) {
 		r.Get("/", s.listDevices)
@@ -43,9 +55,11 @@ func NewServer(port int, store *store.Store, apns *apns.ApnsClient) Server {
 		r.Delete("/", s.deleteDevice)
 	})
 
-	r.Post("/notify", s.notify)
+	r.Route("/notify", func(r chi.Router) {
+		r.Post("/", s.notify)
+	})
 
-	return s
+	return &s, nil
 }
 
 func (s *Server) Serve() {

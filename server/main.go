@@ -54,8 +54,11 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	go gcal.Run(ctx)
 
-	s := server.NewServer(serverPort, store, apns)
-	s.Serve()
+	s, err := server.NewServer(serverPort, store, apns, cfg.ServerApiKeysPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	s.Serve()
 	cancel()
 }
