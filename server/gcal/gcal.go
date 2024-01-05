@@ -132,7 +132,6 @@ func (c *CalendarClient) checkEvents() {
 }
 
 func (c *CalendarClient) postNotification(event *calendar.Event) {
-
 	devices, err := c.store.ListDevices()
 	if err != nil {
 		log.Printf("Failed to retrieve devices, not sending notification: %v\n", err)
