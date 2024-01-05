@@ -14,6 +14,13 @@ import (
 	"github.com/ddeville/kattungar-notify/store"
 )
 
+type ServerConfig struct {
+	Port        int
+	ApiKeysPath string
+	Store       *store.Store
+	ApnsClient  *apns.ApnsClient
+}
+
 type Server struct {
 	port   int
 	router *chi.Mux
@@ -21,8 +28,8 @@ type Server struct {
 	apns   *apns.ApnsClient
 }
 
-func NewServer(port int, store *store.Store, apns *apns.ApnsClient, apiKeysPath string) (*Server, error) {
-	apiKeysData, err := os.Open(apiKeysPath)
+func NewServer(cfg ServerConfig) (*Server, error) {
+	apiKeysData, err := os.Open(cfg.ApiKeysPath)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +42,7 @@ func NewServer(port int, store *store.Store, apns *apns.ApnsClient, apiKeysPath 
 	}
 
 	r := chi.NewRouter()
-	s := Server{port, r, store, apns}
+	s := Server{cfg.Port, r, cfg.Store, cfg.ApnsClient}
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
