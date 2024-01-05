@@ -10,10 +10,10 @@ RUN go build -v -o exe .
 
 ##############
 
-FROM alpine:3.19
+FROM ubuntu:22.04
 
 COPY --from=builder /usr/src/kattungar-notify/exe /usr/local/bin/kattungar-notify
 
 EXPOSE 5000
 
-CMD ["kattungar-notify"]
+CMD ["/usr/local/bin/kattungar-notify"]
