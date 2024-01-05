@@ -71,6 +71,8 @@ func (c *CalendarClient) Run(ctx context.Context) {
 }
 
 func (c *CalendarClient) checkEvents() {
+	log.Println("Checking calendar events")
+
 	events, err := c.svc.Events.List(c.calendarId).
 		TimeMin(time.Now().Add(-eventSpread).Format(time.RFC3339)).
 		TimeMax(time.Now().Add(+eventSpread).Format(time.RFC3339)).
