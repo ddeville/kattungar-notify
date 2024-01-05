@@ -4,47 +4,47 @@ import (
 	"testing"
 )
 
-func TestLRUCache_SetAndGet(t *testing.T) {
+func TestLRUCache_AddAndContains(t *testing.T) {
 	cache := NewLRUCache(2)
-	cache.Set("key1", "value1")
-	cache.Set("key2", "value2")
+	cache.Add("item1")
+	cache.Add("item2")
 
-	if val, ok := cache.Get("key1"); !ok || val != "value1" {
-		t.Errorf("Got %s; want %s", val, "value1")
+	if !cache.Contains("item1") {
+		t.Errorf("Cache should contain 'item1'")
 	}
 
-	if val, ok := cache.Get("key2"); !ok || val != "value2" {
-		t.Errorf("Got %s; want %s", val, "value2")
+	if !cache.Contains("item2") {
+		t.Errorf("Cache should contain 'item2'")
 	}
 }
 
 func TestLRUCache_Capacity(t *testing.T) {
 	cache := NewLRUCache(2)
-	cache.Set("key1", "value1")
-	cache.Set("key2", "value2")
-	cache.Set("key3", "value3") // This should evict "key1"
+	cache.Add("item1")
+	cache.Add("item2")
+	cache.Add("item3") // This should evict "item1"
 
-	if _, ok := cache.Get("key1"); ok {
-		t.Error("Expected key1 to be evicted")
+	if cache.Contains("item1") {
+		t.Error("Cache should not contain 'item1'")
 	}
 
-	if val, ok := cache.Get("key3"); !ok || val != "value3" {
-		t.Errorf("Got %s; want %s", val, "value3")
+	if !cache.Contains("item3") {
+		t.Errorf("Cache should contain 'item3'")
 	}
 }
 
-func TestLRUCache_UpdateOrderOnGet(t *testing.T) {
+func TestLRUCache_UpdateOrderOnAdd(t *testing.T) {
 	cache := NewLRUCache(2)
-	cache.Set("key1", "value1")
-	cache.Set("key2", "value2")
-	cache.Get("key1")           // This should make key2 the least recently used
-	cache.Set("key3", "value3") // This should evict "key2"
+	cache.Add("item1")
+	cache.Add("item2")
+	cache.Add("item1") // This should make item2 the least recently used
+	cache.Add("item3") // This should evict "item2"
 
-	if _, ok := cache.Get("key2"); ok {
-		t.Error("Expected key2 to be evicted")
+	if cache.Contains("item2") {
+		t.Error("Cache should not contain 'item2'")
 	}
 
-	if val, ok := cache.Get("key1"); !ok || val != "value1" {
-		t.Errorf("Got %s; want %s", val, "value1")
+	if !cache.Contains("item1") {
+		t.Errorf("Cache should contain 'item1'")
 	}
 }

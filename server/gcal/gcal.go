@@ -25,8 +25,9 @@ type CalendarConfig struct {
 }
 
 type CalendarClient struct {
-	svc        *calendar.Service
-	calendarId string
+	svc                 *calendar.Service
+	calendarId          string
+	notifiedEventsCache LRUCache
 }
 
 func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
@@ -48,7 +49,7 @@ func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
 		return nil, err
 	}
 
-	return &CalendarClient{svc, cfg.CalendarId}, nil
+	return &CalendarClient{svc, cfg.CalendarId, NewLRUCache(512)}, nil
 }
 
 const tickerDuration = 5 * time.Minute
@@ -84,21 +85,46 @@ func (c *CalendarClient) checkEvents() {
 	}
 
 	for _, event := range events.Items {
+		// Check whether this is a recurring event, in which case fetch the actual instance
+		if len(event.Recurrence) != 0 {
+			instances, err := c.svc.Events.Instances(c.calendarId, event.Id).
+				TimeMin(time.Now().Add(-eventSpread).Format(time.RFC3339)).
+				TimeMax(time.Now().Add(eventSpread).Format(time.RFC3339)).
+				Do()
+			if err != nil {
+				log.Printf("Unable to retrieve recurring instances for event: %v: %v\n", event.Summary, err)
+				continue
+			}
+
+			if len(instances.Items) == 0 {
+				log.Printf("Recurring event doesn't have instances in the time span: %v\n", event.Summary)
+				continue
+			}
+
+			event = instances.Items[0]
+		}
+
 		// Look for all-day events and filter them out (they have `Date` set but not `DateTime`)
 		if event.Start != nil && event.Start.DateTime == "" {
 			log.Printf("Skipping all-day event: %v\n", event.Summary)
-			return
+			continue
 		}
 
 		// Make sure that the event includes the tag in its description
 		if !strings.Contains(event.Description, "#kattungar-notify") {
 			log.Printf("Skipping event that doesn't have #kattungar-notify tag: %v\n", event.Summary)
-			return
+			continue
 		}
 
-		// TODO(damien): Check whether we have already sent a notification for this event
+		if c.notifiedEventsCache.Contains(event.Id) {
+			log.Printf("Skipping event that already triggered a notification: %v\n", event.Summary)
+			continue
+		}
+
+		log.Printf(event.Id)
 
 		c.postNotification(event)
+		c.notifiedEventsCache.Add(event.Id)
 	}
 }
 
