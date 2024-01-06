@@ -26,7 +26,7 @@ func init() {
 				log.Fatal(err)
 			}
 
-			log.Println(devices)
+			printDevices(devices)
 		},
 	}
 	rootCmd.AddCommand(cmdListDevices)
@@ -54,7 +54,7 @@ func init() {
 				log.Fatal(err)
 			}
 
-			log.Println(device)
+			printDevices([]store.Device{device})
 		},
 	}
 	cmdAddDevice.Flags().String("key", "", "Key of the device")
