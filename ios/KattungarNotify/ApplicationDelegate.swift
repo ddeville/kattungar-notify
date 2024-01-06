@@ -10,11 +10,11 @@
 import UIKit
 
 typealias Application = UIApplication
-typealias RemoteNotificationDelegate = UIApplicationDelegate
 
-class ApplicationDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
+class ApplicationDelegate: CommonApplicationDelegate, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        setupNotifications(application: application, delegate: self)
+        registerForRemoteNotifications = application.registerForRemoteNotifications
+        handleApplicationChange()
         return true
     }
 }
@@ -23,42 +23,72 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, ObservableObject 
 
 import Cocoa
 import UserNotifications
-import SwiftUI
 
 typealias Application = NSApplication
-typealias RemoteNotificationDelegate = NSApplicationDelegate
 
-class ApplicationDelegate: NSObject, NSApplicationDelegate, ObservableObject {
+class ApplicationDelegate: CommonApplicationDelegate, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupNotifications(application: notification.object as! NSApplication, delegate: self)
+        registerForRemoteNotifications = (notification.object as! NSApplication).registerForRemoteNotifications
+        handleApplicationChange()
     }
 }
 
 #endif
 
-func setupNotifications(application: Application, delegate: UNUserNotificationCenterDelegate) {
-    application.registerForRemoteNotifications()
+class CommonApplicationDelegate: NSObject, ObservableObject {
+    fileprivate var registerForRemoteNotifications: (() -> Void)?
 
-    UNUserNotificationCenter.current().delegate = delegate
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-        guard success else {
-            print("Didn't get approval to send push notifications... \(String(describing: error))")
-            return
+    @Published var hasSetupDeviceKey: Bool = false
+
+    func handleApplicationChange() {
+        UNUserNotificationCenter.current().delegate = self
+
+        // This will switch between the device key setup and regular view
+        hasSetupDeviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey) != nil
+
+        // Let's get a token if we've never retrieved one before
+        if hasSetupDeviceKey && UserDefaults.standard.string(forKey: TokenDefaultsKey) == nil {
+            registerForRemoteNotifications!()
+
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                if !success {
+                    print("Didn't get approval to send push notifications... \(String(describing: error))")
+                }
+            }
         }
     }
-}
 
-extension ApplicationDelegate {
-    func application(_ application: Application, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        handleTokenRegistration(deviceToken)
+    @objc func application(_ application: Application, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
+        let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey)!
+
+        // Remove existing token so that we attempt to refresh next time if we fail retrieving
+        UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
+
+        registerToken(deviceKey: deviceKey, token: token) { result in
+            switch result {
+            case .success(_):
+                print("Successfully updated token")
+                UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
+            case .failure(let error):
+                if case URLSession.HTTPError.serverSideError(let statusCode) = error {
+                    if statusCode == 401 {
+                        print("Request failed as unauthorized, device key is likely wrong: \(error)")
+                        UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
+                        self.hasSetupDeviceKey = false
+                    }
+                }
+                print("Failed to make request to server \(error)")
+            }
+        }
     }
 
-    func application(_ application: Application, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    @objc func application(_ application: Application, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Failed to register for notifications... \(error)")
     }
 }
 
-extension ApplicationDelegate: UNUserNotificationCenterDelegate {
+extension CommonApplicationDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([[.banner, .sound]])
     }
