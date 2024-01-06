@@ -92,14 +92,14 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Creating device %v", r.Body)
-
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Creating device %v", device)
 
 	if device.Id != 0 {
 		http.Error(w, "cannot pass device ID", http.StatusBadRequest)
@@ -128,14 +128,14 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Updating device %v", r.Body)
-
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Updating device %v", device)
 
 	if device.Id == 0 {
 		http.Error(w, "missing device ID", http.StatusBadRequest)
@@ -160,14 +160,14 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Deleting device %v", r.Body)
-
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Deleting device %v", device)
 
 	found, err := s.store.DeleteDevice(device)
 	if err != nil {
