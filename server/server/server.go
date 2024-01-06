@@ -109,7 +109,7 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 	d, err := s.store.CreateDevice(device)
 	if err != nil {
 		if store.IsExistingDeviceError(err) {
-			http.Error(w, "A device with this name already exists", http.StatusConflict)
+			http.Error(w, fmt.Sprintf("A device with this name already exists: %v", err), http.StatusConflict)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
