@@ -1,5 +1,5 @@
 *
-!cmd
+!cmd/server
 !internal
 !go.mod
 !go.sum
