@@ -14,6 +14,23 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	var cmdListDevices = &cobra.Command{
+		Use:   "list-devices",
+		Short: "List all devices",
+		Run: func(_ *cobra.Command, _ []string) {
+			res := makeRequest("GET", "https://notify.home.kattungar.net/admin/device", nil, nil)
+
+			var devices []store.Device
+			defer res.Body.Close()
+			if err := json.NewDecoder(res.Body).Decode(&devices); err != nil {
+				log.Fatal(err)
+			}
+
+			log.Println(devices)
+		},
+	}
+	rootCmd.AddCommand(cmdListDevices)
+
 	var cmdAddDevice = &cobra.Command{
 		Use:   "add-device",
 		Short: "Add a new device",
@@ -90,21 +107,4 @@ func init() {
 	cmdUpdateDevice.MarkFlagRequired("key")
 	cmdUpdateDevice.MarkFlagRequired("name")
 	rootCmd.AddCommand(cmdUpdateDevice)
-
-	var cmdListDevices = &cobra.Command{
-		Use:   "list-devices",
-		Short: "List all devices",
-		Run: func(_ *cobra.Command, _ []string) {
-			res := makeRequest("GET", "https://notify.home.kattungar.net/admin/device", nil, nil)
-
-			var devices []store.Device
-			defer res.Body.Close()
-			if err := json.NewDecoder(res.Body).Decode(&devices); err != nil {
-				log.Fatal(err)
-			}
-
-			log.Println(devices)
-		},
-	}
-	rootCmd.AddCommand(cmdListDevices)
 }
