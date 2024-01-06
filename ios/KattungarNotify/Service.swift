@@ -10,7 +10,7 @@ import Foundation
 let TokenDefaultsKey = "kattungar-apns-token"
 let DeviceKey = "123-456-789"
 
-func handleTokenRegistration(deviceToken: Data) {
+func handleTokenRegistration(_ deviceToken: Data) {
     let token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
     let existingToken = UserDefaults.standard.string(forKey: TokenDefaultsKey)
 
