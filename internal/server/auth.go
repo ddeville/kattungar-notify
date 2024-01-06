@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/ddeville/kattungar-notify/store"
+	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
 func ApiKeyAuth(keys []string) func(next http.Handler) http.Handler {

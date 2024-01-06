@@ -11,8 +11,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/ddeville/kattungar-notify/apns"
-	"github.com/ddeville/kattungar-notify/store"
+	"github.com/ddeville/kattungar-notify/internal/apns"
+	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
 type ServerConfig struct {

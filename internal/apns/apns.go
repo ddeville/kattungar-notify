@@ -5,7 +5,7 @@ import (
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
 
-	"github.com/ddeville/kattungar-notify/store"
+	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
 type ApnsConfig struct {

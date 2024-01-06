@@ -5,10 +5,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/ddeville/kattungar-notify/apns"
-	"github.com/ddeville/kattungar-notify/gcal"
-	"github.com/ddeville/kattungar-notify/server"
-	"github.com/ddeville/kattungar-notify/store"
+	"github.com/ddeville/kattungar-notify/internal"
+	"github.com/ddeville/kattungar-notify/internal/apns"
+	"github.com/ddeville/kattungar-notify/internal/gcal"
+	"github.com/ddeville/kattungar-notify/internal/server"
+	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
 const serverPort = 5000
@@ -21,7 +22,7 @@ func main() {
 
 	log.Println("Starting server...")
 
-	cfg, err := LoadConfig()
+	cfg, err := internal.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}

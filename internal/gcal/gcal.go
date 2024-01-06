@@ -13,8 +13,8 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
 
-	"github.com/ddeville/kattungar-notify/apns"
-	"github.com/ddeville/kattungar-notify/store"
+	"github.com/ddeville/kattungar-notify/internal/apns"
+	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
 type CalendarConfig struct {
