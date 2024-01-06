@@ -5,6 +5,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     pull_policy: build
+    restart: on-failure
     image: kattungar-notify-server
     environment:
       - KATTUNGAR_STORE_PATH=/var/lib/sqlite/store.db
