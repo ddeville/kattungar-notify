@@ -1,6 +1,11 @@
 package main
 
-func main() {
-	Execute()
+import (
+	"log"
+)
 
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatalln(err)
+	}
 }

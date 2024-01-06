@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/ddeville/kattungar-notify/internal"
 	"github.com/ddeville/kattungar-notify/internal/apns"
 	"github.com/ddeville/kattungar-notify/internal/gcal"
 	"github.com/ddeville/kattungar-notify/internal/server"
@@ -22,7 +21,7 @@ func main() {
 
 	log.Println("Starting server...")
 
-	cfg, err := internal.LoadConfig()
+	cfg, err := LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
