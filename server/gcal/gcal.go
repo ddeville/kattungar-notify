@@ -144,7 +144,7 @@ func (c *CalendarClient) postNotification(event *calendar.Event) {
 			Title:      fmt.Sprintf("🗓️ %v", event.Summary),
 		}
 
-		c.apns.Notify(nil, notification)
+		c.apns.Notify(&device, notification)
 		c.store.RecordNotification(notification)
 	}
 }
