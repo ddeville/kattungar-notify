@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -91,6 +92,8 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Creating device %v", r.Body)
+
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
@@ -125,6 +128,8 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Updating device %v", r.Body)
+
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
@@ -155,6 +160,8 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Deleting device %v", r.Body)
+
 	var device store.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
