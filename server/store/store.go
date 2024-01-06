@@ -20,8 +20,8 @@ func NewStore(dbPath string) (*Store, error) {
 	}
 
 	sqlStmt := `
-	CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, name TEXT UNIQUE, token TEXT);
-	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_name TEXT, title TEXT, subtitle TEXT, body TEXT);
+	CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, key TEXT UNIQUE, name TEXT, token TEXT);
+	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_key TEXT, title TEXT, subtitle TEXT, body TEXT);
 	CREATE TABLE IF NOT EXISTS calendar_event (id INTEGER NOT NULL PRIMARY KEY, event_id TEXT, notified INTEGER);
 	`
 	_, err = db.Exec(sqlStmt)
@@ -36,7 +36,7 @@ func (s *Store) ListDevices() ([]Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	rows, err := s.db.Query("SELECT id, name, token FROM device")
+	rows, err := s.db.Query("SELECT id, key, name, token FROM device")
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (s *Store) ListDevices() ([]Device, error) {
 	var devices []Device
 	for rows.Next() {
 		var device Device
-		err = rows.Scan(&device.Id, &device.Name, &device.Token)
+		err = rows.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
 		if err != nil {
 			return nil, err
 		}
@@ -65,13 +65,13 @@ func (s *Store) ListDevices() ([]Device, error) {
 	return devices, nil
 }
 
-func (s *Store) GetDevice(name string) (*Device, error) {
+func (s *Store) GetDevice(key string) (*Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	var device Device
-	row := s.db.QueryRow("SELECT id, name, token FROM device WHERE name = ?", name)
-	err := row.Scan(&device.Id, &device.Name, &device.Token)
+	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE key = ?", key)
+	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -81,11 +81,15 @@ func (s *Store) GetDevice(name string) (*Device, error) {
 	return &device, nil
 }
 
-func (s *Store) CreateDevice(device Device) (*Device, error) {
+func (s *Store) CreateDevice(key string, name string, token string) (*Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	res, err := s.db.Exec("INSERT INTO device (name, token) VALUES (?, ?)", device.Name, device.Token)
+	if key == "" {
+		return nil, fmt.Errorf("missing device key")
+	}
+
+	res, err := s.db.Exec("INSERT INTO device (key, name, token) VALUES (?, ?, ?)", key, name, token)
 	if err != nil {
 		return nil, err
 	}
@@ -95,14 +99,14 @@ func (s *Store) CreateDevice(device Device) (*Device, error) {
 		return nil, err
 	}
 
-	return &Device{id, device.Name, device.Token}, nil
+	return &Device{id, key, name, token}, nil
 }
 
-func (s *Store) UpdateDevice(device Device) (bool, error) {
+func (s *Store) UpdateDeviceName(key string, name string) (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	res, err := s.db.Exec("UPDATE device SET name = ?, token = ? WHERE id = ?", device.Name, device.Token, device.Id)
+	res, err := s.db.Exec("UPDATE device SET name = ? WHERE key = ?", name, key)
 	if err != nil {
 		return false, err
 	}
@@ -118,11 +122,31 @@ func (s *Store) UpdateDevice(device Device) (bool, error) {
 	return true, err
 }
 
-func (s *Store) DeleteDevice(device Device) (bool, error) {
+func (s *Store) UpdateDeviceToken(key string, token string) (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	res, err := s.db.Exec("DELETE FROM device WHERE id = ?", device.Id)
+	res, err := s.db.Exec("UPDATE device SET token = ? WHERE key = ?", token, key)
+	if err != nil {
+		return false, err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if num == 0 {
+		return false, nil
+	}
+
+	return true, err
+}
+
+func (s *Store) DeleteDevice(key string) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	res, err := s.db.Exec("DELETE FROM device WHERE key = ?", key)
 	if err != nil {
 		return false, err
 	}
@@ -152,8 +176,8 @@ func (s *Store) RecordNotification(notification Notification) error {
 	defer s.mu.Unlock()
 
 	_, err := s.db.Exec(
-		"INSERT INTO notification (device_name, title, subtitle, body) VALUES (?, ?, ?, ?)",
-		notification.DeviceName,
+		"INSERT INTO notification (device_key, title, subtitle, body) VALUES (?, ?, ?, ?)",
+		notification.DeviceKey,
 		notification.Title,
 		notification.Subtitle,
 		notification.Body,

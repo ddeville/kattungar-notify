@@ -50,20 +50,30 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
-	r.Use(ApiKeyAuth(apiKeys))
 
 	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("Welcome to Kattungar Notify!"))
 	})
 
-	r.Route("/devices", func(r chi.Router) {
+	// These are admin endpoints to create/list/delete devices and are behind api key auth
+	r.Route("/admin/device", func(r chi.Router) {
+		r.Use(ApiKeyAuth(apiKeys))
 		r.Get("/", s.listDevices)
 		r.Post("/", s.createDevice)
-		r.Put("/", s.updateDevice)
 		r.Delete("/", s.deleteDevice)
 	})
 
+	// These are endpoints only gated on the device key itself
+	r.Route("/device", func(r chi.Router) {
+		r.Use(DeviceAuth(cfg.Store))
+		r.Get("/", s.getDevice)
+		r.Put("/name", s.updateDeviceName)
+		r.Put("/token", s.updateDeviceToken)
+	})
+
+	// Sending a notification is also currently an admin operation but might not be in the future
 	r.Route("/notify", func(r chi.Router) {
+		r.Use(ApiKeyAuth(apiKeys))
 		r.Post("/", s.notify)
 	})
 
@@ -87,8 +97,8 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(jsonData)
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
@@ -101,12 +111,12 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Creating device %v", device)
 
-	if device.Id != 0 {
-		http.Error(w, "cannot pass device ID", http.StatusBadRequest)
+	if device.Key == "" {
+		http.Error(w, "missing device key", http.StatusBadRequest)
 		return
 	}
 
-	d, err := s.store.CreateDevice(device)
+	d, err := s.store.CreateDevice(device.Key, device.Name, device.Token)
 	if err != nil {
 		if store.IsExistingDeviceError(err) {
 			log.Printf("Failed to create device because it already exists %v", err)
@@ -123,41 +133,9 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(jsonData)
-	w.Header().Set("Content-Type", "application/json")
-}
-
-func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
-	var device store.Device
-	err := json.NewDecoder(r.Body).Decode(&device)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	log.Printf("Updating device %v", device)
-
-	if device.Id == 0 {
-		http.Error(w, "missing device ID", http.StatusBadRequest)
-		return
-	}
-
-	found, err := s.store.UpdateDevice(device)
-	if err != nil {
-		if store.IsExistingDeviceError(err) {
-			http.Error(w, err.Error(), http.StatusConflict)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-	if !found {
-		http.Error(w, "cannot find device", http.StatusNotFound)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
@@ -170,13 +148,77 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Deleting device %v", device)
 
-	found, err := s.store.DeleteDevice(device)
+	found, err := s.store.DeleteDevice(device.Key)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if !found {
 		http.Error(w, "cannot find device", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) getDevice(w http.ResponseWriter, r *http.Request) {
+	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+
+	jsonData, err := json.Marshal(device)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+}
+
+func (s *Server) updateDeviceName(w http.ResponseWriter, r *http.Request) {
+	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+
+	var update store.Device
+	err := json.NewDecoder(r.Body).Decode(&update)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if update.Name == "" {
+		http.Error(w, "missing device name in body", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Updating name in device %v", device)
+
+	_, err = s.store.UpdateDeviceName(device.Key, update.Name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) updateDeviceToken(w http.ResponseWriter, r *http.Request) {
+	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+
+	var update store.Device
+	err := json.NewDecoder(r.Body).Decode(&update)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if update.Token == "" {
+		http.Error(w, "missing device token in body", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Updating token in device %v", device)
+
+	_, err = s.store.UpdateDeviceToken(device.Key, update.Token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -191,8 +233,8 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(notification.DeviceName) == 0 {
-		http.Error(w, "missing device name", http.StatusBadRequest)
+	if len(notification.DeviceKey) == 0 {
+		http.Error(w, "missing device key", http.StatusBadRequest)
 		return
 	}
 
@@ -201,13 +243,13 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	device, err := s.store.GetDevice(notification.DeviceName)
+	device, err := s.store.GetDevice(notification.DeviceKey)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if device == nil {
-		http.Error(w, "unknown device name", http.StatusBadRequest)
+		http.Error(w, "unknown device key", http.StatusBadRequest)
 		return
 	}
 
