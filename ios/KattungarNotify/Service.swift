@@ -8,17 +8,21 @@
 import Foundation
 
 let TokenDefaultsKey = "kattungar-apns-token"
+let DeviceKeyDefaultsKey = "kattungar-device-key"
+
 let DeviceKey = "123-456-789"
 
 func handleTokenRegistration(_ deviceToken: Data) {
     let token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
     let existingToken = UserDefaults.standard.string(forKey: TokenDefaultsKey)
 
+//    let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey)
     let deviceKey = DeviceKey
 
     if token != existingToken {
+        UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
         registerToken(deviceKey: deviceKey, token: token) { result in
-            switch result {
+        switch result {
             case .success(_):
                 print("Successfully updated token")
                 UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
