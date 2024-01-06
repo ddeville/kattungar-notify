@@ -6,14 +6,13 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 func makeRequest(method, url string, body []byte, authToken *string) *http.Response {
 	if authToken == nil {
-		apiKey, has := os.LookupEnv("KATTUNGAR_NOTIFY_API_KEY")
-		if !has {
-			log.Fatalln("Missing KATTUNGAR_NOTIFY_API_KEY environment variable")
+		apiKey := getApiKey()
+		if apiKey == "" {
+			log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
 		}
 		authToken = &apiKey
 	}
