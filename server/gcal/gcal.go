@@ -141,7 +141,7 @@ func (c *CalendarClient) postNotification(event *calendar.Event) {
 		log.Printf("Sending notification for event \"%v\" to device %v\n", event.Summary, device.Name)
 		notification := store.Notification{
 			DeviceName: device.Name,
-			Title:      fmt.Sprintf("🗓️ %v", event.Summary),
+			Body:       fmt.Sprintf("🗓️ %v", event.Summary),
 		}
 
 		c.apns.Notify(&device, notification)

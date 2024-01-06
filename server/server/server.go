@@ -196,8 +196,8 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(notification.Title) == 0 && len(notification.Subtitle) == 0 {
-		http.Error(w, "missing title or subtitle", http.StatusBadRequest)
+	if len(notification.Title) == 0 && len(notification.Subtitle) == 0 && len(notification.Body) == 0 {
+		http.Error(w, "missing title, subtitle, or body", http.StatusBadRequest)
 		return
 	}
 
