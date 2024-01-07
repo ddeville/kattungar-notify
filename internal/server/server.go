@@ -233,8 +233,8 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(notification.DeviceKey) == 0 {
-		http.Error(w, "missing device key", http.StatusBadRequest)
+	if len(notification.DeviceKey) == 0 && len(notification.DeviceName) == 0 {
+		http.Error(w, "missing device_key or device_name", http.StatusBadRequest)
 		return
 	}
 
@@ -243,15 +243,23 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	device, err := s.store.GetDevice(notification.DeviceKey)
+	var device *store.Device
+	if len(notification.DeviceKey) > 0 {
+		device, err = s.store.GetDevice(notification.DeviceKey)
+	} else {
+		device, err = s.store.GetDeviceByName(notification.DeviceKey)
+	}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if device == nil {
-		http.Error(w, "unknown device key", http.StatusBadRequest)
+		http.Error(w, "unknown device key/name", http.StatusBadRequest)
 		return
 	}
+
+	notification.DeviceKey = device.Key
+	notification.DeviceName = device.Name
 
 	err = s.store.RecordNotification(notification)
 	if err != nil {

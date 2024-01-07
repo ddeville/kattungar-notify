@@ -81,6 +81,22 @@ func (s *Store) GetDevice(key string) (*Device, error) {
 	return &device, nil
 }
 
+func (s *Store) GetDeviceByName(name string) (*Device, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var device Device
+	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE name = ?", name)
+	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &device, nil
+}
+
 func (s *Store) CreateDevice(key string, name string, token string) (*Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
