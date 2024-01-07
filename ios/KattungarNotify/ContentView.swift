@@ -25,13 +25,10 @@ struct ContentView: View {
     }
 }
 
-import SwiftUI
-
 struct InputView: View {
     @EnvironmentObject private var delegate: ApplicationDelegate
 
     @State private var inputText: String = ""
-    @State private var submittedText: String = ""
 
     var body: some View {
         VStack {
