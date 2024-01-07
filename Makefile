@@ -1,4 +1,4 @@
-.PHONY: build-cli run-cli install-cli build-server run-server
+.PHONY: build-cli run-cli install-cli build-server run-server build-ios
 
 build-cli:
 	go build -o build/kattungar-notify-admin ./cmd/cli
