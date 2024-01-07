@@ -32,7 +32,7 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 		TeamID:  cfg.TeamId,
 	}
 
-	client := apns2.NewTokenClient(token)
+	client := apns2.NewTokenClient(token).Production()
 	return &ApnsClient{client, cfg}, nil
 }
 
