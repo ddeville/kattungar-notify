@@ -229,16 +229,19 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 	var notification store.Notification
 	err := json.NewDecoder(r.Body).Decode(&notification)
 	if err != nil {
+		log.Printf("Cannot decode notification body")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if len(notification.DeviceKey) == 0 && len(notification.DeviceName) == 0 {
+		log.Printf("Missing device_key or device_name")
 		http.Error(w, "missing device_key or device_name", http.StatusBadRequest)
 		return
 	}
 
 	if len(notification.Title) == 0 && len(notification.Subtitle) == 0 && len(notification.Body) == 0 {
+		log.Printf("Missing title, subtitle, or body")
 		http.Error(w, "missing title, subtitle, or body", http.StatusBadRequest)
 		return
 	}
@@ -250,10 +253,12 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		device, err = s.store.GetDeviceByName(notification.DeviceName)
 	}
 	if err != nil {
+		log.Printf("Cannot retrieve device: %v", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if device == nil {
+		log.Printf("Unknown device key/name")
 		http.Error(w, "unknown device key/name", http.StatusBadRequest)
 		return
 	}
@@ -263,16 +268,19 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 
 	err = s.store.RecordNotification(notification)
 	if err != nil {
+		log.Printf("Cannot record notification: %v", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	res, err := s.apns.Notify(device, notification)
 	if err != nil {
+		log.Printf("Cannot connect to APNs: %v", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if res.StatusCode != http.StatusOK {
+		log.Printf("Request to APNs failed: %v (status code %v)", res.Reason, res.StatusCode)
 		http.Error(w, res.Reason, res.StatusCode)
 		return
 	}
