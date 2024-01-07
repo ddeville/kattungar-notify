@@ -8,11 +8,12 @@ type Device struct {
 }
 
 type Notification struct {
-	Id        int64
-	DeviceKey string `json:"device_key"`
-	Title     string `json:"title"`
-	Subtitle  string `json:"subtitle"`
-	Body      string `json:"body"`
+	Id         int64
+	DeviceKey  string `json:"device_key"`
+	DeviceName string `json:"device_name"`
+	Title      string `json:"title"`
+	Subtitle   string `json:"subtitle"`
+	Body       string `json:"body"`
 }
 
 type CalendarEvent struct {

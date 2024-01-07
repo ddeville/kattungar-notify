@@ -21,7 +21,7 @@ func NewStore(dbPath string) (*Store, error) {
 
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS device (id INTEGER NOT NULL PRIMARY KEY, key TEXT UNIQUE, name TEXT, token TEXT);
-	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_key TEXT, title TEXT, subtitle TEXT, body TEXT);
+	CREATE TABLE IF NOT EXISTS notification (id INTEGER NOT NULL PRIMARY KEY, device_key TEXT, device_name TEXT, title TEXT, subtitle TEXT, body TEXT);
 	CREATE TABLE IF NOT EXISTS calendar_event (id INTEGER NOT NULL PRIMARY KEY, event_id TEXT, notified INTEGER);
 	`
 	_, err = db.Exec(sqlStmt)
@@ -176,8 +176,9 @@ func (s *Store) RecordNotification(notification Notification) error {
 	defer s.mu.Unlock()
 
 	_, err := s.db.Exec(
-		"INSERT INTO notification (device_key, title, subtitle, body) VALUES (?, ?, ?, ?)",
+		"INSERT INTO notification (device_key, device_name, title, subtitle, body) VALUES (?, ?, ?, ?, ?)",
 		notification.DeviceKey,
+		notification.DeviceName,
 		notification.Title,
 		notification.Subtitle,
 		notification.Body,
