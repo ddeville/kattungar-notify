@@ -247,7 +247,7 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 	if len(notification.DeviceKey) > 0 {
 		device, err = s.store.GetDevice(notification.DeviceKey)
 	} else {
-		device, err = s.store.GetDeviceByName(notification.DeviceKey)
+		device, err = s.store.GetDeviceByName(notification.DeviceName)
 	}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
