@@ -14,3 +14,6 @@ build-server:
 
 run-server:
 	docker-compose -f docker-compose.yaml up
+
+build-ios:
+	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -target "Kattungar Notify"
