@@ -9,10 +9,6 @@ import (
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "kattungar-notify-admin",
-}
-
 func init() {
 	var cmdListDevices = &cobra.Command{
 		Use:   "list-devices",
