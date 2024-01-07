@@ -273,7 +273,7 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		http.Error(w, res.Reason, http.StatusBadRequest)
+		http.Error(w, res.Reason, res.StatusCode)
 		return
 	}
 
