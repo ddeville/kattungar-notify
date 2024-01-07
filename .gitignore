@@ -52,3 +52,6 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+
+# Golang build output
+build/
