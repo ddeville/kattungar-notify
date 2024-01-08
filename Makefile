@@ -1,4 +1,4 @@
-.PHONY: build-cli run-cli install-cli build-server run-server build-ios
+.PHONY: build-cli run-cli install-cli build-server run-server build-ios archive-ios publish-ios
 
 build-cli:
 	go build -o build/kattungar-notify-admin ./cmd/cli
@@ -16,4 +16,12 @@ run-server:
 	docker-compose -f docker-compose.yaml up
 
 build-ios:
-	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -target "Kattungar Notify"
+	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -scheme "Kattungar Notify"
+
+archive-ios:
+	rm -rf build/ios
+	xcodebuild clean -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -sdk iphoneos
+	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -archivePath build/ios/KattungarNotify.xcarchive
+
+publish-ios: archive-ios
+	xcodebuild -exportArchive -archivePath build/ios/KattungarNotify.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath build/ios -allowProvisioningUpdates
