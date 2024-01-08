@@ -84,6 +84,7 @@
 			buildPhases = (
 				6D06ACF62B45364D0019BEA4 /* Sources */,
 				6D06ACF72B45364D0019BEA4 /* Frameworks */,
+				6DF2147C2B4B881400309B17 /* Increment Bundle Version */,
 				6D06ACF82B45364D0019BEA4 /* Resources */,
 			);
 			buildRules = (
@@ -139,6 +140,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6DF2147C2B4B881400309B17 /* Increment Bundle Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Increment Bundle Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "#!/bin/bash\nif [ \"${CONFIGURATION}\" == \"Release\" ]; then\n    version_number=$(xcodebuild -project \"$PROJECT_DIR/$PROJECT_NAME.xcodeproj\" -target \"${TARGET_NAME}\" -showBuildSettings 2> /dev/null | grep CURRENT_PROJECT_VERSION | tr -d 'CURRENT_PROJECT_VERSION =')\n    version_number=$(($version_number + 1))\n    /usr/bin/xcrun agvtool new-version -all $version_number\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6D06ACF62B45364D0019BEA4 /* Sources */ = {
@@ -281,6 +303,7 @@
 				DEVELOPMENT_TEAM = Q8B696Y8U4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -319,6 +342,7 @@
 				DEVELOPMENT_TEAM = Q8B696Y8U4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
