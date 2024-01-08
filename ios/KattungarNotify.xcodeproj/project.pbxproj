@@ -158,7 +158,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "#!/bin/bash\nif [ \"${CONFIGURATION}\" == \"Release\" ]; then\n    version_number=$(xcodebuild -project \"$PROJECT_DIR/$PROJECT_NAME.xcodeproj\" -target \"${TARGET_NAME}\" -showBuildSettings 2> /dev/null | grep CURRENT_PROJECT_VERSION | tr -d 'CURRENT_PROJECT_VERSION =')\n    version_number=$(($version_number + 1))\n    /usr/bin/xcrun agvtool new-version -all $version_number\nfi\n";
+			shellScript = "#!/bin/bash\nif [ \"${CONFIGURATION}\" == \"Release\" ]; then\n    /usr/bin/xcrun agvtool next-version -all\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
