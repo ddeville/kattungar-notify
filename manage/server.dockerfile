@@ -1,4 +1,4 @@
-FROM golang:1.21-bookworm AS builder
+FROM golang:1.23.4-bookworm AS builder
 
 WORKDIR /usr/src/kattungar-notify
 
