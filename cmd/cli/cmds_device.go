@@ -14,7 +14,7 @@ func init() {
 		Use:   "list-devices",
 		Short: "List all devices",
 		Run: func(_ *cobra.Command, _ []string) {
-			res := makeRequest("GET", "https://notify.home.kattungar.net/admin/device", nil, nil)
+			res := makeRequest("GET", "/admin/device", nil, nil)
 
 			var devices []store.Device
 			defer res.Body.Close()
@@ -42,7 +42,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			res := makeRequest("POST", "https://notify.home.kattungar.net/admin/device", body, nil)
+			res := makeRequest("POST", "/admin/device", body, nil)
 
 			var device store.Device
 			defer res.Body.Close()
@@ -72,7 +72,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("DELETE", "https://notify.home.kattungar.net/admin/device", body, nil)
+			_ = makeRequest("DELETE", "/admin/device", body, nil)
 			log.Printf("Deleted device with key: %s\n", key)
 		},
 	}
@@ -94,7 +94,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("PUT", "https://notify.home.kattungar.net/device/name", body, &key)
+			_ = makeRequest("PUT", "/device/name", body, &key)
 			log.Printf("Updated device name to \"%s\"\n", key)
 		},
 	}

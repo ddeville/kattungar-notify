@@ -19,3 +19,12 @@ func init() {
 func getApiKey() string {
 	return viper.GetString("api_key")
 }
+
+func getServerUrl() string {
+	url := viper.GetString("server_url")
+	if url != "" {
+		return url
+	} else {
+		return "https://notify.home.kattungar.net"
+	}
+}

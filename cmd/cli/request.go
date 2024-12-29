@@ -6,9 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 )
 
-func makeRequest(method, url string, body []byte, authToken *string) *http.Response {
+func makeRequest(method, path string, body []byte, authToken *string) *http.Response {
 	if authToken == nil {
 		apiKey := getApiKey()
 		if apiKey == "" {
@@ -17,12 +18,22 @@ func makeRequest(method, url string, body []byte, authToken *string) *http.Respo
 		authToken = &apiKey
 	}
 
+	root := getServerUrl()
+	if root == "" {
+		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
+	}
+
+	reqUrl, err := url.JoinPath(root, path)
+	if err != nil {
+		log.Fatalf("URL is malformed root = %s, path = %s\n", root, path)
+	}
+
 	var buf io.Reader
 	if body != nil {
 		buf = bytes.NewBuffer(body)
 	}
 
-	req, err := http.NewRequest(method, url, buf)
+	req, err := http.NewRequest(method, reqUrl, buf)
 	if err != nil {
 		log.Fatalln(err)
 	}

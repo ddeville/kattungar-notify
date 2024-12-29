@@ -42,7 +42,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("POST", "https://notify.home.kattungar.net/notify", requestBody, nil)
+			_ = makeRequest("POST", "/notify", requestBody, nil)
 			log.Println("Notification sent!")
 		},
 	}
