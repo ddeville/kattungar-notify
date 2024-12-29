@@ -103,4 +103,25 @@ func init() {
 	cmdUpdateDevice.MarkFlagRequired("key")
 	cmdUpdateDevice.MarkFlagRequired("name")
 	rootCmd.AddCommand(cmdUpdateDevice)
+
+	var cmdListNotifications = &cobra.Command{
+		Use:   "list-notifications",
+		Short: "List all notifications for a device",
+		Run: func(cmd *cobra.Command, _ []string) {
+			key, _ := cmd.Flags().GetString("key")
+
+			res := makeRequest("GET", "/device/list_notifications", nil, &key)
+
+			var notifications []store.Notification
+			defer res.Body.Close()
+			if err := json.NewDecoder(res.Body).Decode(&notifications); err != nil {
+				log.Fatal(err)
+			}
+
+			printNotifications(notifications)
+		},
+	}
+	cmdListNotifications.Flags().String("key", "", "Key of the device")
+	cmdListNotifications.MarkFlagRequired("key")
+	rootCmd.AddCommand(cmdListNotifications)
 }
