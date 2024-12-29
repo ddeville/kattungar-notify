@@ -67,6 +67,7 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 	r.Route("/device", func(r chi.Router) {
 		r.Use(DeviceAuth(cfg.Store))
 		r.Get("/", s.getDevice)
+		r.Get("/list_notifications", s.listNotifications)
 		r.Put("/name", s.updateDeviceName)
 		r.Put("/token", s.updateDeviceToken)
 	})
@@ -172,6 +173,27 @@ func (s *Server) getDevice(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+}
+
+func (s *Server) listNotifications(w http.ResponseWriter, r *http.Request) {
+	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+
+	log.Printf("Listing notifications for device %v", device)
+
+	notifications, err := s.store.ListNotifications(device)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	jsonData, err := json.Marshal(notifications)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonData)
 }
 

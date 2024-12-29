@@ -202,6 +202,39 @@ func (s *Store) RecordNotification(notification Notification) error {
 	return err
 }
 
+func (s *Store) ListNotifications(device *Device) ([]Notification, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	rows, err := s.db.Query("SELECT id, device_key, device_name, title, subtitle, body FROM notification WHERE device_key = ?", device.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var notifications []Notification
+	for rows.Next() {
+		var notif Notification
+		err = rows.Scan(&notif.Id, &notif.DeviceKey, &notif.DeviceName, &notif.Title, &notif.Subtitle, &notif.Body)
+		if err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, notif)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	if notifications == nil {
+		notifications = make([]Notification, 0)
+	}
+
+	return notifications, nil
+}
+
 func (s *Store) AddCalendarEvent(id string, notified bool) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
