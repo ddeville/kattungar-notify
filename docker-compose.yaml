@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: manage/server.dockerfile
+      target: service
     pull_policy: build
     restart: on-failure
     image: kattungar-notify-server
