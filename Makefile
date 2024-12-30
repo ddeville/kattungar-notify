@@ -1,4 +1,6 @@
-.PHONY: build-admin-cli run-admin-cli install-admin-cli build-server run-server build-ios archive-ios publish-ios
+##### Admin CLI #####
+
+.PHONY: build-admin-cli run-admin-cli install-admin-cli
 
 build-admin-cli:
 	go build -o build/kattungar-notify-admin ./cmd/admin_cli
@@ -9,11 +11,32 @@ run-admin-cli:
 install-admin-cli: build-admin-cli
 	sudo mv build/kattungar-notify-admin /usr/local/bin/kattungar-notify-admin
 
+##### Notify CLI #####
+
+.PHONY: build-notify-cli run-notify-cli install-notify-cli
+
+build-notify-cli:
+	go build -o build/kattungar-notify ./cmd/notify_cli
+
+run-notify-cli:
+	go run ./cmd/notify_cli
+
+install-notify-cli: build-notify-cli
+	sudo mv build/kattungar-notify /usr/local/bin/kattungar-notify
+
+##### Server #####
+
+.PHONY: build-server run-server
+
 build-server:
 	docker-compose -f docker-compose.yaml build
 
 run-server:
 	docker-compose -f docker-compose.yaml up
+
+##### iOS #####
+
+.PHONY: build-ios archive-ios publish-ios
 
 build-ios:
 	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -scheme "Kattungar Notify" -allowProvisioningUpdates

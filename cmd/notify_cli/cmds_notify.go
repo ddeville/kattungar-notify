@@ -10,6 +10,10 @@ import (
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
+var rootCmd = &cobra.Command{
+	Use: "kattungar-notify",
+}
+
 func init() {
 	var cmdNotify = &cobra.Command{
 		Use:   "notify",
