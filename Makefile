@@ -3,7 +3,7 @@
 .PHONY: build-admin-cli run-admin-cli install-admin-cli
 
 build-admin-cli:
-	go build -o build/kattungar-notify-admin ./cmd/admin_cli
+	CGO_ENABLED=0 go build -o build/kattungar-notify-admin ./cmd/admin_cli
 
 run-admin-cli:
 	go run ./cmd/admin_cli
@@ -16,7 +16,7 @@ install-admin-cli: build-admin-cli
 .PHONY: build-notify-cli run-notify-cli install-notify-cli
 
 build-notify-cli:
-	go build -o build/kattungar-notify ./cmd/notify_cli
+	CGO_ENABLED=0 go build -o build/kattungar-notify ./cmd/notify_cli
 
 run-notify-cli:
 	go run ./cmd/notify_cli
