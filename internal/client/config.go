@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func init() {
+func InitConfig() {
 	viper.AddConfigPath("$XDG_CONFIG_HOME/kattungar-notify")
 
 	viper.SetConfigName("config")
