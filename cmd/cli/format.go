@@ -27,10 +27,10 @@ func printDevices(devices []store.Device) {
 func printNotifications(notifications []store.Notification) {
 	if len(notifications) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Id", "DeviceName", "Title", "Subtitle", "Body"})
+		table.SetHeader([]string{"Id", "Title", "Subtitle", "Body"})
 
 		for _, n := range notifications {
-			table.Append([]string{fmt.Sprintf("%d", n.Id), n.DeviceName, n.Title, n.Subtitle, n.Body})
+			table.Append([]string{fmt.Sprintf("%d", n.Id), n.Title, n.Subtitle, n.Body})
 		}
 		table.Render()
 	} else {
