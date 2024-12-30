@@ -73,9 +73,8 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 		r.Put("/token", s.updateDeviceToken)
 	})
 
-	// Sending a notification is also currently an admin operation but might not be in the future
+	// Sending a notification doesn't require authentication
 	r.Route("/notify", func(r chi.Router) {
-		r.Use(ApiKeyAuth(apiKeys))
 		r.Post("/", s.notify)
 	})
 
