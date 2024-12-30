@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"github.com/spf13/viper"
@@ -16,11 +16,11 @@ func init() {
 	viper.ReadInConfig()
 }
 
-func getApiKey() string {
+func GetApiKey() string {
 	return viper.GetString("api_key")
 }
 
-func getServerUrl() string {
+func GetServerUrl() string {
 	url := viper.GetString("server_url")
 	if url != "" {
 		return url

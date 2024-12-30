@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/ddeville/kattungar-notify/internal/client"
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
@@ -42,7 +43,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("POST", "/notify", requestBody, nil)
+			_ = client.MakeRequest("POST", "/notify", requestBody, nil)
 			log.Println("Notification sent!")
 		},
 	}

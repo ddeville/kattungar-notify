@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bytes"
@@ -9,16 +9,16 @@ import (
 	"net/url"
 )
 
-func makeRequest(method, path string, body []byte, authToken *string) *http.Response {
+func MakeRequest(method, path string, body []byte, authToken *string) *http.Response {
 	if authToken == nil {
-		apiKey := getApiKey()
+		apiKey := GetApiKey()
 		if apiKey == "" {
 			log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
 		}
 		authToken = &apiKey
 	}
 
-	root := getServerUrl()
+	root := GetServerUrl()
 	if root == "" {
 		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
 	}

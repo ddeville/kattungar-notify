@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/ddeville/kattungar-notify/internal/client"
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
@@ -14,7 +15,7 @@ func init() {
 		Use:   "list-devices",
 		Short: "List all devices",
 		Run: func(_ *cobra.Command, _ []string) {
-			res := makeRequest("GET", "/admin/device", nil, nil)
+			res := client.MakeRequest("GET", "/admin/device", nil, nil)
 
 			var devices []store.Device
 			defer res.Body.Close()
@@ -42,7 +43,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			res := makeRequest("POST", "/admin/device", body, nil)
+			res := client.MakeRequest("POST", "/admin/device", body, nil)
 
 			var device store.Device
 			defer res.Body.Close()
@@ -72,7 +73,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("DELETE", "/admin/device", body, nil)
+			_ = client.MakeRequest("DELETE", "/admin/device", body, nil)
 			log.Printf("Deleted device with key: %s\n", key)
 		},
 	}
@@ -94,7 +95,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			_ = makeRequest("PUT", "/device/name", body, &key)
+			_ = client.MakeRequest("PUT", "/device/name", body, &key)
 			log.Printf("Updated device name to \"%s\"\n", key)
 		},
 	}
@@ -110,7 +111,7 @@ func init() {
 		Run: func(cmd *cobra.Command, _ []string) {
 			key, _ := cmd.Flags().GetString("key")
 
-			res := makeRequest("GET", "/device/list_notifications", nil, &key)
+			res := client.MakeRequest("GET", "/device/list_notifications", nil, &key)
 
 			var notifications []store.Notification
 			defer res.Body.Close()
