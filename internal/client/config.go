@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	viper.AddConfigPath("$XDG_CONFIG_HOME/kattungar-notify-admin")
+	viper.AddConfigPath("$XDG_CONFIG_HOME/kattungar-notify")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
