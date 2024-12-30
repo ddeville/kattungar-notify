@@ -1,12 +1,12 @@
-.PHONY: build-cli run-cli install-cli build-server run-server build-ios archive-ios publish-ios
+.PHONY: build-admin-cli run-admin-cli install-admin-cli build-server run-server build-ios archive-ios publish-ios
 
-build-cli:
-	go build -o build/kattungar-notify-admin ./cmd/cli
+build-admin-cli:
+	go build -o build/kattungar-notify-admin ./cmd/admin_cli
 
-run-cli:
-	go run ./cmd/cli
+run-admin-cli:
+	go run ./cmd/admin_cli
 
-install-cli: build-cli
+install-admin-cli: build-admin-cli
 	sudo mv build/kattungar-notify-admin /usr/local/bin/kattungar-notify-admin
 
 build-server:
