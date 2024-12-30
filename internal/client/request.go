@@ -10,14 +10,6 @@ import (
 )
 
 func MakeRequest(method, path string, body []byte, authToken *string) *http.Response {
-	if authToken == nil {
-		apiKey := GetApiKey()
-		if apiKey == "" {
-			log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
-		}
-		authToken = &apiKey
-	}
-
 	root := GetServerUrl()
 	if root == "" {
 		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
@@ -38,7 +30,9 @@ func MakeRequest(method, path string, body []byte, authToken *string) *http.Resp
 		log.Fatalln(err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *authToken))
+	if authToken != nil {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *authToken))
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)

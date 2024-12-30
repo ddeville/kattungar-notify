@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/spf13/viper"
+	"log"
 )
 
 func init() {
@@ -17,7 +18,11 @@ func init() {
 }
 
 func GetApiKey() string {
-	return viper.GetString("api_key")
+	apiKey := viper.GetString("api_key")
+	if apiKey == "" {
+		log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
+	}
+	return apiKey
 }
 
 func GetServerUrl() string {
