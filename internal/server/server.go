@@ -183,12 +183,14 @@ func (s *Server) listNotifications(w http.ResponseWriter, r *http.Request) {
 
 	notifications, err := s.store.ListNotifications(device)
 	if err != nil {
+		log.Printf("Cannot query notification from store %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	jsonData, err := json.Marshal(notifications)
 	if err != nil {
+		log.Printf("Cannot marshal notification into json %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
