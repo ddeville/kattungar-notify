@@ -1,4 +1,4 @@
-package store
+package types
 
 type Device struct {
 	Id    int64

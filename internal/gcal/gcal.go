@@ -15,6 +15,7 @@ import (
 
 	"github.com/ddeville/kattungar-notify/internal/apns"
 	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
 type CalendarConfig struct {
@@ -139,7 +140,7 @@ func (c *CalendarClient) postNotification(event *calendar.Event) {
 
 	for _, device := range devices {
 		log.Printf("Sending notification for event \"%v\" to device %v\n", event.Summary, device.Name)
-		notification := store.Notification{
+		notification := types.Notification{
 			DeviceKey: device.Name,
 			Body:      fmt.Sprintf("🗓️ %v", event.Summary),
 		}

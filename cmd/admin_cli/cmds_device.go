@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ddeville/kattungar-notify/internal/client"
-	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
 func init() {
@@ -17,7 +17,7 @@ func init() {
 		Run: func(_ *cobra.Command, _ []string) {
 			res := client.MakeRequest("GET", "/admin/device", nil, nil)
 
-			var devices []store.Device
+			var devices []types.Device
 			defer res.Body.Close()
 			if err := json.NewDecoder(res.Body).Decode(&devices); err != nil {
 				log.Fatal(err)
@@ -35,7 +35,7 @@ func init() {
 			key, _ := cmd.Flags().GetString("key")
 			name, _ := cmd.Flags().GetString("name")
 
-			body, err := json.Marshal(store.Device{
+			body, err := json.Marshal(types.Device{
 				Key:  key,
 				Name: name,
 			})
@@ -45,13 +45,13 @@ func init() {
 
 			res := client.MakeRequest("POST", "/admin/device", body, nil)
 
-			var device store.Device
+			var device types.Device
 			defer res.Body.Close()
 			if err := json.NewDecoder(res.Body).Decode(&device); err != nil {
 				log.Fatal(err)
 			}
 
-			printDevices([]store.Device{device})
+			printDevices([]types.Device{device})
 		},
 	}
 	cmdAddDevice.Flags().String("key", "", "Key of the device")
@@ -66,7 +66,7 @@ func init() {
 		Run: func(cmd *cobra.Command, _ []string) {
 			key, _ := cmd.Flags().GetString("key")
 
-			body, err := json.Marshal(store.Device{
+			body, err := json.Marshal(types.Device{
 				Key: key,
 			})
 			if err != nil {
@@ -88,7 +88,7 @@ func init() {
 			key, _ := cmd.Flags().GetString("key")
 			name, _ := cmd.Flags().GetString("name")
 
-			body, err := json.Marshal(store.Device{
+			body, err := json.Marshal(types.Device{
 				Name: name,
 			})
 			if err != nil {
@@ -113,7 +113,7 @@ func init() {
 
 			res := client.MakeRequest("GET", "/device/list_notifications", nil, &key)
 
-			var notifications []store.Notification
+			var notifications []types.Notification
 			defer res.Body.Close()
 			if err := json.NewDecoder(res.Body).Decode(&notifications); err != nil {
 				log.Fatal(err)

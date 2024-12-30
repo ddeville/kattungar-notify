@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ddeville/kattungar-notify/internal/client"
-	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
 var rootCmd = &cobra.Command{
@@ -36,7 +36,7 @@ func init() {
 				log.Fatalln("You need to provide a title, subtitle, or body!")
 			}
 
-			requestBody, err := json.Marshal(store.Notification{
+			requestBody, err := json.Marshal(types.Notification{
 				DeviceKey:  key,
 				DeviceName: name,
 				Title:      title,

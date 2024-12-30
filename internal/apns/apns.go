@@ -5,7 +5,7 @@ import (
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
 
-	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
 type ApnsConfig struct {
@@ -36,7 +36,7 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 	return &ApnsClient{client, cfg}, nil
 }
 
-func (c *ApnsClient) Notify(device *store.Device, notification store.Notification) (*apns2.Response, error) {
+func (c *ApnsClient) Notify(device *types.Device, notification types.Notification) (*apns2.Response, error) {
 	payload := payload.NewPayload().AlertTitle(notification.Title).AlertSubtitle(notification.Subtitle).AlertBody(notification.Body)
 	return c.inner.Push(&apns2.Notification{
 		Topic:       c.cfg.AppId,

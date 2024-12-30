@@ -7,10 +7,10 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
-func printDevices(devices []store.Device) {
+func printDevices(devices []types.Device) {
 	if len(devices) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Id", "Key", "Name", "Token"})
@@ -24,7 +24,7 @@ func printDevices(devices []store.Device) {
 	}
 }
 
-func printNotifications(notifications []store.Notification) {
+func printNotifications(notifications []types.Notification) {
 	if len(notifications) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Id", "Title", "Subtitle", "Body"})

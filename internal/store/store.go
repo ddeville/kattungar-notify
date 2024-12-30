@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/ddeville/kattungar-notify/internal/types"
 	"github.com/mattn/go-sqlite3"
 )
 
@@ -32,7 +33,7 @@ func NewStore(dbPath string) (*Store, error) {
 	return &Store{db: db}, nil
 }
 
-func (s *Store) ListDevices() ([]Device, error) {
+func (s *Store) ListDevices() ([]types.Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -43,9 +44,9 @@ func (s *Store) ListDevices() ([]Device, error) {
 
 	defer rows.Close()
 
-	var devices []Device
+	var devices []types.Device
 	for rows.Next() {
-		var device Device
+		var device types.Device
 		err = rows.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
 		if err != nil {
 			return nil, err
@@ -59,17 +60,17 @@ func (s *Store) ListDevices() ([]Device, error) {
 	}
 
 	if devices == nil {
-		devices = make([]Device, 0)
+		devices = make([]types.Device, 0)
 	}
 
 	return devices, nil
 }
 
-func (s *Store) GetDevice(key string) (*Device, error) {
+func (s *Store) GetDevice(key string) (*types.Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	var device Device
+	var device types.Device
 	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE key = ?", key)
 	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
 	if err != nil {
@@ -81,11 +82,11 @@ func (s *Store) GetDevice(key string) (*Device, error) {
 	return &device, nil
 }
 
-func (s *Store) GetDeviceByName(name string) (*Device, error) {
+func (s *Store) GetDeviceByName(name string) (*types.Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	var device Device
+	var device types.Device
 	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE name = ?", name)
 	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
 	if err != nil {
@@ -97,7 +98,7 @@ func (s *Store) GetDeviceByName(name string) (*Device, error) {
 	return &device, nil
 }
 
-func (s *Store) CreateDevice(key string, name string, token string) (*Device, error) {
+func (s *Store) CreateDevice(key string, name string, token string) (*types.Device, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -115,7 +116,7 @@ func (s *Store) CreateDevice(key string, name string, token string) (*Device, er
 		return nil, err
 	}
 
-	return &Device{id, key, name, token}, nil
+	return &types.Device{Id: id, Key: key, Name: name, Token: token}, nil
 }
 
 func (s *Store) UpdateDeviceName(key string, name string) (bool, error) {
@@ -187,7 +188,7 @@ func IsExistingDeviceError(err error) bool {
 	return false
 }
 
-func (s *Store) RecordNotification(notification Notification) error {
+func (s *Store) RecordNotification(notification types.Notification) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -202,7 +203,7 @@ func (s *Store) RecordNotification(notification Notification) error {
 	return err
 }
 
-func (s *Store) ListNotifications(device *Device) ([]Notification, error) {
+func (s *Store) ListNotifications(device *types.Device) ([]types.Notification, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -213,9 +214,9 @@ func (s *Store) ListNotifications(device *Device) ([]Notification, error) {
 
 	defer rows.Close()
 
-	var notifications []Notification
+	var notifications []types.Notification
 	for rows.Next() {
-		var notif Notification
+		var notif types.Notification
 		err = rows.Scan(&notif.Id, &notif.DeviceKey, &notif.DeviceName, &notif.Title, &notif.Subtitle, &notif.Body)
 		if err != nil {
 			return nil, err
@@ -229,7 +230,7 @@ func (s *Store) ListNotifications(device *Device) ([]Notification, error) {
 	}
 
 	if notifications == nil {
-		notifications = make([]Notification, 0)
+		notifications = make([]types.Notification, 0)
 	}
 
 	return notifications, nil

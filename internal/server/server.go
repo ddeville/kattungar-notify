@@ -13,6 +13,7 @@ import (
 
 	"github.com/ddeville/kattungar-notify/internal/apns"
 	"github.com/ddeville/kattungar-notify/internal/store"
+	"github.com/ddeville/kattungar-notify/internal/types"
 )
 
 type ServerConfig struct {
@@ -103,7 +104,7 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
-	var device store.Device
+	var device types.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -140,7 +141,7 @@ func (s *Server) createDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
-	var device store.Device
+	var device types.Device
 	err := json.NewDecoder(r.Body).Decode(&device)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -163,7 +164,7 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getDevice(w http.ResponseWriter, r *http.Request) {
-	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+	device := r.Context().Value(DeviceAuthContextKey).(*types.Device)
 
 	jsonData, err := json.Marshal(device)
 	if err != nil {
@@ -177,7 +178,7 @@ func (s *Server) getDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listNotifications(w http.ResponseWriter, r *http.Request) {
-	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+	device := r.Context().Value(DeviceAuthContextKey).(*types.Device)
 
 	log.Printf("Listing notifications for device %v", device)
 
@@ -200,9 +201,9 @@ func (s *Server) listNotifications(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDeviceName(w http.ResponseWriter, r *http.Request) {
-	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+	device := r.Context().Value(DeviceAuthContextKey).(*types.Device)
 
-	var update store.Device
+	var update types.Device
 	err := json.NewDecoder(r.Body).Decode(&update)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -225,9 +226,9 @@ func (s *Server) updateDeviceName(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) updateDeviceToken(w http.ResponseWriter, r *http.Request) {
-	device := r.Context().Value(DeviceAuthContextKey).(*store.Device)
+	device := r.Context().Value(DeviceAuthContextKey).(*types.Device)
 
-	var update store.Device
+	var update types.Device
 	err := json.NewDecoder(r.Body).Decode(&update)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -250,7 +251,7 @@ func (s *Server) updateDeviceToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
-	var notification store.Notification
+	var notification types.Notification
 	err := json.NewDecoder(r.Body).Decode(&notification)
 	if err != nil {
 		log.Printf("Cannot decode notification body")
@@ -270,7 +271,7 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var device *store.Device
+	var device *types.Device
 	if len(notification.DeviceKey) > 0 {
 		device, err = s.store.GetDevice(notification.DeviceKey)
 	} else {
