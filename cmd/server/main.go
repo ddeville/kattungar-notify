@@ -21,12 +21,7 @@ func main() {
 
 	log.Println("Starting server...")
 
-	cfg, err := LoadConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	store, err := store.NewStore(cfg.StorePath)
+	store, err := store.NewStore(C.StorePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,17 +29,17 @@ func main() {
 	apns, err := apns.NewApnsClient(apns.ApnsConfig{
 		TeamId:  teamId,
 		AppId:   appId,
-		KeyId:   cfg.ApnsKeyId,
-		KeyPath: cfg.ApnsKeyPath,
+		KeyId:   C.ApnsKeyId,
+		KeyPath: C.ApnsKeyPath,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	gcal, err := gcal.NewClient(gcal.CalendarConfig{
-		GoogleCredentialsPath: cfg.GoogleCredsPath,
-		GoogleRefreshToken:    cfg.GoogleRefreshToken,
-		CalendarId:            cfg.GoogleCalendarId,
+		GoogleCredentialsPath: C.GoogleCredsPath,
+		GoogleRefreshToken:    C.GoogleRefreshToken,
+		CalendarId:            C.GoogleCalendarId,
 		ApnsClient:            apns,
 		Store:                 store,
 	})
@@ -56,7 +51,7 @@ func main() {
 
 	s, err := server.NewServer(server.ServerConfig{
 		Port:        serverPort,
-		ApiKeysPath: cfg.ServerApiKeysPath,
+		ApiKeysPath: C.ServerApiKeysPath,
 		Store:       store,
 		ApnsClient:  apns,
 	})
