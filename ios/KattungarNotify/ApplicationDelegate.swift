@@ -66,19 +66,21 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
         UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
 
         registerToken(deviceKey: deviceKey, token: token) { result in
-            switch result {
-            case .success(_):
-                print("Successfully updated token")
-                UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
-            case .failure(let error):
-                if case URLSession.HTTPError.serverSideError(let statusCode) = error {
-                    if statusCode == 401 {
-                        print("Request failed as unauthorized, device key is likely wrong: \(error)")
-                        UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
-                        self.hasSetupDeviceKey = false
+            DispatchQueue.main.async {
+                switch result {
+                case .success(_):
+                    print("Successfully updated token")
+                    UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
+                case .failure(let error):
+                    if case URLSession.HTTPError.serverSideError(let statusCode) = error {
+                        if statusCode == 401 {
+                            print("Request failed as unauthorized, device key is likely wrong: \(error)")
+                            UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
+                            self.hasSetupDeviceKey = false
+                        }
                     }
+                    print("Failed to make request to server \(error)")
                 }
-                print("Failed to make request to server \(error)")
             }
         }
     }
