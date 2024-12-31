@@ -13,6 +13,12 @@
 		6D06AD062B45364E0019BEA4 /* PreviewAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D06AD052B45364E0019BEA4 /* PreviewAssets.xcassets */; };
 		6D8B52142B48BDE700C70F95 /* ApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8B52132B48BDE700C70F95 /* ApplicationDelegate.swift */; };
 		6D8B52162B48DA3000C70F95 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8B52152B48DA3000C70F95 /* Service.swift */; };
+		6DC49FEF2D23B027009DE947 /* ApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8B52132B48BDE700C70F95 /* ApplicationDelegate.swift */; };
+		6DC49FF02D23B027009DE947 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8B52152B48DA3000C70F95 /* Service.swift */; };
+		6DC49FF12D23B027009DE947 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D06ACFF2B45364D0019BEA4 /* ContentView.swift */; };
+		6DC49FF22D23B027009DE947 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D06ACFD2B45364D0019BEA4 /* Application.swift */; };
+		6DC49FF62D23B027009DE947 /* PreviewAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D06AD052B45364E0019BEA4 /* PreviewAssets.xcassets */; };
+		6DC49FF72D23B027009DE947 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D06AD012B45364E0019BEA4 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,11 +30,19 @@
 		6D06AD052B45364E0019BEA4 /* PreviewAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PreviewAssets.xcassets; sourceTree = "<group>"; };
 		6D8B52132B48BDE700C70F95 /* ApplicationDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationDelegate.swift; sourceTree = "<group>"; };
 		6D8B52152B48DA3000C70F95 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		6DC49FFB2D23B027009DE947 /* Kattungar Notify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kattungar Notify.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DF2147E2B4B91B300309B17 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6D06ACF72B45364D0019BEA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6DC49FF32D23B027009DE947 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				6D06ACFA2B45364D0019BEA4 /* Kattungar Notify.app */,
+				6DC49FFB2D23B027009DE947 /* Kattungar Notify.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +113,24 @@
 			productReference = 6D06ACFA2B45364D0019BEA4 /* Kattungar Notify.app */;
 			productType = "com.apple.product-type.application";
 		};
+		6DC49FED2D23B027009DE947 /* Kattungar Notify MacOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6DC49FF82D23B027009DE947 /* Build configuration list for PBXNativeTarget "Kattungar Notify MacOS" */;
+			buildPhases = (
+				6DC49FEE2D23B027009DE947 /* Sources */,
+				6DC49FF32D23B027009DE947 /* Frameworks */,
+				6DC49FF42D23B027009DE947 /* Increment Bundle Version */,
+				6DC49FF52D23B027009DE947 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Kattungar Notify MacOS";
+			productName = "Kattungar Notify";
+			productReference = 6DC49FFB2D23B027009DE947 /* Kattungar Notify.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -127,6 +160,7 @@
 			projectRoot = "";
 			targets = (
 				6D06ACF92B45364D0019BEA4 /* Kattungar Notify */,
+				6DC49FED2D23B027009DE947 /* Kattungar Notify MacOS */,
 			);
 		};
 /* End PBXProject section */
@@ -141,9 +175,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6DC49FF52D23B027009DE947 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DC49FF62D23B027009DE947 /* PreviewAssets.xcassets in Resources */,
+				6DC49FF72D23B027009DE947 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		6DC49FF42D23B027009DE947 /* Increment Bundle Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Increment Bundle Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "#!/bin/bash\nif [ \"${CONFIGURATION}\" == \"Release\" ]; then\n    /usr/bin/xcrun agvtool next-version -all\nfi\n";
+		};
 		6DF2147C2B4B881400309B17 /* Increment Bundle Version */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -174,6 +236,17 @@
 				6D8B52162B48DA3000C70F95 /* Service.swift in Sources */,
 				6D06AD002B45364D0019BEA4 /* ContentView.swift in Sources */,
 				6D06ACFE2B45364D0019BEA4 /* Application.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6DC49FEE2D23B027009DE947 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DC49FEF2D23B027009DE947 /* ApplicationDelegate.swift in Sources */,
+				6DC49FF02D23B027009DE947 /* Service.swift in Sources */,
+				6DC49FF12D23B027009DE947 /* ContentView.swift in Sources */,
+				6DC49FF22D23B027009DE947 /* Application.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,8 +375,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = KattungarNotify/KattungarNotify.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 29;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"KattungarNotify/PreviewContent\"";
 				DEVELOPMENT_TEAM = Q8B696Y8U4;
@@ -329,6 +403,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ddeville.kattungar-notify";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -343,8 +418,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = KattungarNotify/KattungarNotify.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 29;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"KattungarNotify/PreviewContent\"";
 				DEVELOPMENT_TEAM = Q8B696Y8U4;
@@ -370,11 +446,106 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ddeville.kattungar-notify";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6DC49FF92D23B027009DE947 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KattungarNotify/KattungarNotify.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 29;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"KattungarNotify/PreviewContent\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Q8B696Y8U4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Kattungar Notify";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ddeville.kattungar-notify";
+				PRODUCT_NAME = "Kattungar Notify";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Kattungar Notify";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6DC49FFA2D23B027009DE947 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KattungarNotify/KattungarNotify.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 29;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"KattungarNotify/PreviewContent\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Q8B696Y8U4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Kattungar Notify";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ddeville.kattungar-notify";
+				PRODUCT_NAME = "Kattungar Notify";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Kattungar Notify";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -395,6 +566,15 @@
 			buildConfigurations = (
 				6D06AD0A2B45364E0019BEA4 /* Debug */,
 				6D06AD0B2B45364E0019BEA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6DC49FF82D23B027009DE947 /* Build configuration list for PBXNativeTarget "Kattungar Notify MacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DC49FF92D23B027009DE947 /* Debug */,
+				6DC49FFA2D23B027009DE947 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
