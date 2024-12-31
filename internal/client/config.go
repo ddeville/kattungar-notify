@@ -21,7 +21,7 @@ func init() {
 	viper.SetConfigType("yaml")
 
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("kattungar_notify")
+	viper.SetEnvPrefix("KATTUNGAR_NOTIFY")
 
 	viper.SetDefault("server_url", "https://notify.home.kattungar.net")
 
