@@ -39,7 +39,6 @@ func init() {
 	if C.ApiKey == "" {
 		log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
 	}
-
 	if C.ServerUrl == "" {
 		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
 	}
