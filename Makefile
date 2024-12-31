@@ -60,6 +60,4 @@ archive-macos:
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify MacOS" -configuration Release -destination generic/platform=macOS -archivePath build/macos/KattungarNotify.xcarchive -allowProvisioningUpdates
 
 publish-macos: archive-macos
-	xcodebuild -exportArchive -archivePath build/macos/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_macos.plist -exportPath build/macos -allowProvisioningUpdates
-	# zip -r -j build/macos/KattungarNotify.zip build/macos/KattungarNotify.xcarchive/Products/Applications/Kattungar\ Notify.app
-	# open build/macos
+	./scripts/export-and-notarize-macos

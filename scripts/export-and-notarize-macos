@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# First export the app that was just archived.
+# NOTE: `export_options_macos` expects to have a `Developer ID Application` certificate and the `Kattungar Notify`
+# provisioning profile available on the build machine.
+xcodebuild -exportArchive -archivePath build/macos/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_macos.plist -exportPath build/macos -allowProvisioningUpdates
+
+# Find the submission ID which is just a UUID used as a folder name.
+sub_id=$(basename "$(find build/macos/KattungarNotify.xcarchive/Submissions -maxdepth 1 -type d -regex '.*/[0-9a-fA-F-]\{36\}' | head -n 1)")
+
+# Next wait for notarization to complete.
+# NOTE: `notarytool` needs to be authenticated. I created a profile named `kattungar-notify` with the following
+# command: `notarytool store-credentials`. If this stops working you'll probably have to do this again.
+# I used the "iTunes Connect API Key" that is stored in 1Password.
+notarytool wait "$sub_id" --keychain-profile "kattungar-notify"
+
+# Finally we can export the notarized app and tar it up.
+xcodebuild -exportNotarizedApp -archivePath build/macos/KattungarNotify.xcarchive -exportPath build/macos
+tar -cvzf build/macos/KattungarNotify.tar.gz -C build/macos Kattungar\ Notify.app
+open build/macos

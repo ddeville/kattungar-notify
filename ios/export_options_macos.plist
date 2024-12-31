@@ -4,8 +4,17 @@
 <dict>
     <key>method</key>
     <string>developer-id</string>
-    <!--<key>destination</key>-->
-    <!--<string>upload</string>-->
+    <key>destination</key>
+    <string>upload</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Developer ID Application</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.ddeville.kattungar-notify</key>
+		<string>Kattungar Notify</string>
+	</dict>
     <key>teamID</key>
     <string>Q8B696Y8U4</string>
     <key>teamName</key>
