@@ -11,11 +11,6 @@ import (
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
-const serverPort = 5000
-
-const teamId = "Q8B696Y8U4"
-const appId = "com.ddeville.kattungar-notify"
-
 func main() {
 	log.SetOutput(os.Stdout)
 
@@ -27,8 +22,8 @@ func main() {
 	}
 
 	apns, err := apns.NewApnsClient(apns.ApnsConfig{
-		TeamId:  teamId,
-		AppId:   appId,
+		TeamId:  C.AppleTeamId,
+		AppId:   C.AppleAppId,
 		KeyId:   C.ApnsKeyId,
 		KeyPath: C.ApnsKeyPath,
 	})
@@ -50,7 +45,7 @@ func main() {
 	go gcal.Run(ctx)
 
 	s, err := server.NewServer(server.ServerConfig{
-		Port:        serverPort,
+		Port:        C.Port,
 		ApiKeysPath: C.ServerApiKeysPath,
 		Store:       store,
 		ApnsClient:  apns,
