@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -E '^[a-z]{1,7}$' /usr/share/dict/words | shuf -n 3 | paste -sd '-' -
