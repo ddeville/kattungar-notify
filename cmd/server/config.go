@@ -42,8 +42,19 @@ func init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
-	viper.AutomaticEnv()
 	viper.SetEnvPrefix("KATTUNGAR")
+	viper.AutomaticEnv()
+	// We need to bind environment variables for Unmarshal to use them...
+	viper.BindEnv("port")
+	viper.BindEnv("apple_team_id")
+	viper.BindEnv("apple_app_id")
+	viper.BindEnv("store_path")
+	viper.BindEnv("server_api_keys_path")
+	viper.BindEnv("apns_key_id")
+	viper.BindEnv("apns_key_path")
+	viper.BindEnv("google_creds_path")
+	viper.BindEnv("google_refresh_token")
+	viper.BindEnv("google_calendar_id")
 
 	viper.SetDefault("port", defaultPort)
 	viper.SetDefault("apple_team_id", defaultAppleTeamId)

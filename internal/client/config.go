@@ -20,8 +20,11 @@ func init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
-	viper.AutomaticEnv()
 	viper.SetEnvPrefix("KATTUNGAR_NOTIFY")
+	viper.AutomaticEnv()
+	// We need to bind environment variables for Unmarshal to use them...
+	viper.BindEnv("api_key")
+	viper.BindEnv("server_url")
 
 	viper.SetDefault("server_url", "https://notify.home.kattungar.net")
 
