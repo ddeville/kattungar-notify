@@ -10,14 +10,9 @@ import (
 )
 
 func MakeRequest(method, path string, body []byte, authToken *string) *http.Response {
-	root := GetServerUrl()
-	if root == "" {
-		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
-	}
-
-	reqUrl, err := url.JoinPath(root, path)
+	reqUrl, err := url.JoinPath(C.ServerUrl, path)
 	if err != nil {
-		log.Fatalf("URL is malformed root = %s, path = %s\n", root, path)
+		log.Fatalf("URL is malformed server_url = %s, path = %s\n", C.ServerUrl, path)
 	}
 
 	var buf io.Reader

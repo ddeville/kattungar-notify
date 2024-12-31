@@ -15,7 +15,7 @@ func init() {
 		Use:   "list-devices",
 		Short: "List all devices",
 		Run: func(_ *cobra.Command, _ []string) {
-			apiKey := client.GetApiKey()
+			apiKey := client.C.ApiKey
 			res := client.MakeRequest("GET", "/admin/device", nil, &apiKey)
 
 			var devices []types.Device
@@ -44,7 +44,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			apiKey := client.GetApiKey()
+			apiKey := client.C.ApiKey
 			res := client.MakeRequest("POST", "/admin/device", body, &apiKey)
 
 			var device types.Device
@@ -75,7 +75,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			apiKey := client.GetApiKey()
+			apiKey := client.C.ApiKey
 			_ = client.MakeRequest("DELETE", "/admin/device", body, &apiKey)
 			log.Printf("Deleted device with key: %s\n", key)
 		},
@@ -98,7 +98,7 @@ func init() {
 				log.Fatalln(err)
 			}
 
-			apiKey := client.GetApiKey()
+			apiKey := client.C.ApiKey
 			_ = client.MakeRequest("PUT", "/device/name", body, &apiKey)
 			log.Printf("Updated device name to \"%s\"\n", key)
 		},

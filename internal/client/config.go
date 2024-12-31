@@ -1,11 +1,20 @@
 package client
 
 import (
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 )
 
-func InitConfig() {
+type config struct {
+	ApiKey    string `mapstructure:"api_key"`
+	ServerUrl string `mapstructure:"server_url"`
+}
+
+var C config
+
+func init() {
+	viper.AddConfigPath("/etc/kattungar-notify")
 	viper.AddConfigPath("$XDG_CONFIG_HOME/kattungar-notify")
 
 	viper.SetConfigName("config")
@@ -14,22 +23,24 @@ func InitConfig() {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("kattungar_notify")
 
-	viper.ReadInConfig()
-}
+	viper.SetDefault("server_url", "https://notify.home.kattungar.net")
 
-func GetApiKey() string {
-	apiKey := viper.GetString("api_key")
-	if apiKey == "" {
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			log.Fatalf("fatal error config file: %v", err)
+		}
+	}
+
+	if err := viper.Unmarshal(&C); err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
+
+	}
+
+	if C.ApiKey == "" {
 		log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
 	}
-	return apiKey
-}
 
-func GetServerUrl() string {
-	url := viper.GetString("server_url")
-	if url != "" {
-		return url
-	} else {
-		return "https://notify.home.kattungar.net"
+	if C.ServerUrl == "" {
+		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
 	}
 }
