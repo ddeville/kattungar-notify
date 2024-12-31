@@ -47,7 +47,7 @@ archive-ios:
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -archivePath build/ios/KattungarNotify.xcarchive -allowProvisioningUpdates
 
 publish-ios: archive-ios
-	xcodebuild -exportArchive -archivePath build/ios/KattungarNotify.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath build/ios -allowProvisioningUpdates
+	xcodebuild -exportArchive -archivePath build/ios/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_ios.plist -exportPath build/ios -allowProvisioningUpdates
 
 ##### macOS #####
 
@@ -60,5 +60,6 @@ archive-macos:
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify MacOS" -configuration Release -destination generic/platform=macOS -archivePath build/macos/KattungarNotify.xcarchive -allowProvisioningUpdates
 
 publish-macos: archive-macos
-	zip -r build/macos/KattungarNotify.zip "build/macos/KattungarNotify.xcarchive/Products/Applications/Kattungar Notify.app" 
-	open build/macos
+	xcodebuild -exportArchive -archivePath build/macos/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_macos.plist -exportPath build/macos -allowProvisioningUpdates
+	# zip -r -j build/macos/KattungarNotify.zip build/macos/KattungarNotify.xcarchive/Products/Applications/Kattungar\ Notify.app
+	# open build/macos
