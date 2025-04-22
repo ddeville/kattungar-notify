@@ -42,6 +42,7 @@ build-ios:
 	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -scheme "Kattungar Notify" -allowProvisioningUpdates
 
 archive-ios:
+	security unlock-keychain
 	rm -rf build/ios
 	xcodebuild clean -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -sdk iphoneos
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -archivePath build/ios/KattungarNotify.xcarchive -allowProvisioningUpdates
@@ -55,6 +56,7 @@ build-macos:
 	xcodebuild -project "ios/KattungarNotify.xcodeproj" -configuration Debug -scheme "Kattungar Notify MacOS" -allowProvisioningUpdates
 
 archive-macos:
+	security unlock-keychain
 	rm -rf build/macos
 	xcodebuild clean -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify MacOS" -configuration Release -destination generic/platform=macOS -sdk macosx
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify MacOS" -configuration Release -destination generic/platform=macOS -archivePath build/macos/KattungarNotify.xcarchive -allowProvisioningUpdates
