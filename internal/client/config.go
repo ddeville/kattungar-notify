@@ -36,7 +36,6 @@ func init() {
 
 	if err := viper.Unmarshal(&C); err != nil {
 		log.Fatalf("unable to decode into struct, %v", err)
-
 	}
 
 	if C.ApiKey == "" {
