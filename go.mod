@@ -1,15 +1,15 @@
 module github.com/ddeville/kattungar-notify
 
-go 1.23.4
+go 1.24.0
 
 require (
-	github.com/go-chi/chi/v5 v5.2.0
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/sideshow/apns2 v0.25.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	golang.org/x/oauth2 v0.24.0
+	golang.org/x/oauth2 v0.33.0
 	google.golang.org/api v0.214.0
 )
 
