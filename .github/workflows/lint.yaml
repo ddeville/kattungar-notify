@@ -1,0 +1,42 @@
+name: Lint
+
+on:
+  push:
+    paths:
+      - "**/*.go"
+      - ".github/workflows/lint.yaml"
+      - "go.mod"
+      - "go.sum"
+      - staticcheck.conf
+  pull_request:
+    paths:
+      - "**/*.go"
+      - ".github/workflows/lint.yaml"
+      - "go.mod"
+      - "go.sum"
+      - staticcheck.conf
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: Run staticcheck
+        run: staticcheck ./...
