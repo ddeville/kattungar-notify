@@ -16,7 +16,7 @@ func printDevices(devices []types.Device) {
 		table.Header([]string{"Id", "Key", "Name", "Token"})
 
 		for _, d := range devices {
-			table.Append([]string{fmt.Sprintf("%d", d.Id), d.Key, d.Name, d.Token})
+			table.Append([]string{fmt.Sprintf("%d", d.ID), d.Key, d.Name, d.Token})
 		}
 		table.Render()
 	} else {
@@ -27,10 +27,10 @@ func printDevices(devices []types.Device) {
 func printNotifications(notifications []types.Notification) {
 	if len(notifications) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
-		table.Header([]string{"Id", "Title", "Subtitle", "Body"})
+		table.Header([]string{"ID", "Title", "Subtitle", "Body"})
 
 		for _, n := range notifications {
-			table.Append([]string{fmt.Sprintf("%d", n.Id), n.Title, n.Subtitle, n.Body})
+			table.Append([]string{fmt.Sprintf("%d", n.ID), n.Title, n.Subtitle, n.Body})
 		}
 		table.Render()
 	} else {

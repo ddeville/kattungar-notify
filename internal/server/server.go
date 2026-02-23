@@ -18,7 +18,7 @@ import (
 
 type ServerConfig struct {
 	Port        int
-	ApiKeysPath string
+	APIKeysPath string
 	Store       *store.Store
 	ApnsClient  *apns.ApnsClient
 }
@@ -31,7 +31,7 @@ type Server struct {
 }
 
 func NewServer(cfg ServerConfig) (*Server, error) {
-	apiKeysData, err := os.Open(cfg.ApiKeysPath)
+	apiKeysData, err := os.Open(cfg.APIKeysPath)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 
 	// These are admin endpoints to create/list/delete devices and are behind api key auth
 	r.Route("/admin/device", func(r chi.Router) {
-		r.Use(ApiKeyAuth(apiKeys))
+		r.Use(APIKeyAuth(apiKeys))
 		r.Get("/", s.listDevices)
 		r.Post("/", s.createDevice)
 		r.Delete("/", s.deleteDevice)

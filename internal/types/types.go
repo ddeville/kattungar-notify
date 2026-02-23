@@ -1,14 +1,14 @@
 package types
 
 type Device struct {
-	Id    int64
+	ID    int64
 	Key   string `json:"key"`
 	Name  string `json:"name"`
 	Token string `json:"token"`
 }
 
 type Notification struct {
-	Id         int64
+	ID         int64
 	DeviceKey  string `json:"device_key"`
 	DeviceName string `json:"device_name"`
 	Title      string `json:"title"`
@@ -17,7 +17,7 @@ type Notification struct {
 }
 
 type CalendarEvent struct {
-	Id       int64
-	EventId  string `json:"event_id"`
+	ID       int64
+	EventID  string `json:"event_id"`
 	Notified bool   `json:"notified"`
 }

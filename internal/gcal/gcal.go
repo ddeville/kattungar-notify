@@ -21,7 +21,7 @@ import (
 type CalendarConfig struct {
 	GoogleCredentialsPath string
 	GoogleRefreshToken    string
-	CalendarId            string
+	CalendarID            string
 	ApnsClient            *apns.ApnsClient
 	Store                 *store.Store
 }
@@ -30,7 +30,7 @@ type CalendarClient struct {
 	svc                 *calendar.Service
 	apns                *apns.ApnsClient
 	store               *store.Store
-	calendarId          string
+	calendarID          string
 	notifiedEventsCache LRUCache
 }
 
@@ -53,7 +53,7 @@ func NewClient(cfg CalendarConfig) (*CalendarClient, error) {
 		return nil, err
 	}
 
-	return &CalendarClient{svc, cfg.ApnsClient, cfg.Store, cfg.CalendarId, NewLRUCache(512)}, nil
+	return &CalendarClient{svc, cfg.ApnsClient, cfg.Store, cfg.CalendarID, NewLRUCache(512)}, nil
 }
 
 const tickerDuration = 5 * time.Minute
@@ -79,7 +79,7 @@ func (c *CalendarClient) Run(ctx context.Context) {
 func (c *CalendarClient) checkEvents() {
 	log.Println("Checking calendar events")
 
-	events, err := c.svc.Events.List(c.calendarId).
+	events, err := c.svc.Events.List(c.calendarID).
 		TimeMin(time.Now().Add(-eventSpread).Format(time.RFC3339)).
 		TimeMax(time.Now().Add(+eventSpread).Format(time.RFC3339)).
 		Do()
@@ -91,7 +91,7 @@ func (c *CalendarClient) checkEvents() {
 	for _, event := range events.Items {
 		// Check whether this is a recurring event, in which case fetch the actual instance
 		if len(event.Recurrence) != 0 {
-			instances, err := c.svc.Events.Instances(c.calendarId, event.Id).
+			instances, err := c.svc.Events.Instances(c.calendarID, event.Id).
 				TimeMin(time.Now().Add(-eventSpread).Format(time.RFC3339)).
 				TimeMax(time.Now().Add(eventSpread).Format(time.RFC3339)).
 				Do()

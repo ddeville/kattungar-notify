@@ -9,9 +9,9 @@ import (
 )
 
 type ApnsConfig struct {
-	TeamId  string
-	AppId   string
-	KeyId   string
+	TeamID  string
+	AppID   string
+	KeyID   string
 	KeyPath string
 }
 
@@ -28,8 +28,8 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 
 	token := &token.Token{
 		AuthKey: authKey,
-		KeyID:   cfg.KeyId,
-		TeamID:  cfg.TeamId,
+		KeyID:   cfg.KeyID,
+		TeamID:  cfg.TeamID,
 	}
 
 	client := apns2.NewTokenClient(token).Production()
@@ -39,7 +39,7 @@ func NewApnsClient(cfg ApnsConfig) (*ApnsClient, error) {
 func (c *ApnsClient) Notify(device *types.Device, notification types.Notification) (*apns2.Response, error) {
 	payload := payload.NewPayload().AlertTitle(notification.Title).AlertSubtitle(notification.Subtitle).AlertBody(notification.Body)
 	return c.inner.Push(&apns2.Notification{
-		Topic:       c.cfg.AppId,
+		Topic:       c.cfg.AppID,
 		DeviceToken: device.Token,
 		Payload:     payload,
 	})

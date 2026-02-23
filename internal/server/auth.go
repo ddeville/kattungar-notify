@@ -9,7 +9,7 @@ import (
 	"github.com/ddeville/kattungar-notify/internal/store"
 )
 
-func ApiKeyAuth(keys []string) func(next http.Handler) http.Handler {
+func APIKeyAuth(keys []string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			key := getAuthToken(r)

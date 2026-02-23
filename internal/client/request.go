@@ -10,9 +10,9 @@ import (
 )
 
 func MakeRequest(method, path string, body []byte, authToken *string) *http.Response {
-	reqUrl, err := url.JoinPath(C.ServerUrl, path)
+	reqURL, err := url.JoinPath(C.ServerURL, path)
 	if err != nil {
-		log.Fatalf("URL is malformed server_url = %s, path = %s\n", C.ServerUrl, path)
+		log.Fatalf("URL is malformed server_url = %s, path = %s\n", C.ServerURL, path)
 	}
 
 	var buf io.Reader
@@ -20,7 +20,7 @@ func MakeRequest(method, path string, body []byte, authToken *string) *http.Resp
 		buf = bytes.NewBuffer(body)
 	}
 
-	req, err := http.NewRequest(method, reqUrl, buf)
+	req, err := http.NewRequest(method, reqURL, buf)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -47,7 +47,7 @@ func (s *Store) ListDevices() ([]types.Device, error) {
 	var devices []types.Device
 	for rows.Next() {
 		var device types.Device
-		err = rows.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
+		err = rows.Scan(&device.ID, &device.Key, &device.Name, &device.Token)
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func (s *Store) GetDevice(key string) (*types.Device, error) {
 
 	var device types.Device
 	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE key = ?", key)
-	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
+	err := row.Scan(&device.ID, &device.Key, &device.Name, &device.Token)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -88,7 +88,7 @@ func (s *Store) GetDeviceByName(name string) (*types.Device, error) {
 
 	var device types.Device
 	row := s.db.QueryRow("SELECT id, key, name, token FROM device WHERE name = ?", name)
-	err := row.Scan(&device.Id, &device.Key, &device.Name, &device.Token)
+	err := row.Scan(&device.ID, &device.Key, &device.Name, &device.Token)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -116,7 +116,7 @@ func (s *Store) CreateDevice(key string, name string, token string) (*types.Devi
 		return nil, err
 	}
 
-	return &types.Device{Id: id, Key: key, Name: name, Token: token}, nil
+	return &types.Device{ID: id, Key: key, Name: name, Token: token}, nil
 }
 
 func (s *Store) UpdateDeviceName(key string, name string) (bool, error) {
@@ -217,7 +217,7 @@ func (s *Store) ListNotifications(device *types.Device) ([]types.Notification, e
 	var notifications []types.Notification
 	for rows.Next() {
 		var notif types.Notification
-		err = rows.Scan(&notif.Id, &notif.DeviceKey, &notif.DeviceName, &notif.Title, &notif.Subtitle, &notif.Body)
+		err = rows.Scan(&notif.ID, &notif.DeviceKey, &notif.DeviceName, &notif.Title, &notif.Subtitle, &notif.Body)
 		if err != nil {
 			return nil, err
 		}

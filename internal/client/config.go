@@ -7,8 +7,8 @@ import (
 )
 
 type config struct {
-	ApiKey    string `mapstructure:"api_key"`
-	ServerUrl string `mapstructure:"server_url"`
+	APIKey    string `mapstructure:"api_key"`
+	ServerURL string `mapstructure:"server_url"`
 }
 
 var C config
@@ -38,10 +38,10 @@ func init() {
 		log.Fatalf("unable to decode into struct, %v", err)
 	}
 
-	if C.ApiKey == "" {
+	if C.APIKey == "" {
 		log.Fatalln("Missing 'api_key' in config (or 'KATTUNGAR_NOTIFY_API_KEY' environment variable)")
 	}
-	if C.ServerUrl == "" {
+	if C.ServerURL == "" {
 		log.Fatalln("Missing 'server_url' in config (or 'KATTUNGAR_NOTIFY_SERVER_URL' environment variable)")
 	}
 }

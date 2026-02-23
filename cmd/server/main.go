@@ -22,9 +22,9 @@ func main() {
 	}
 
 	apns, err := apns.NewApnsClient(apns.ApnsConfig{
-		TeamId:  C.AppleTeamId,
-		AppId:   C.AppleAppId,
-		KeyId:   C.ApnsKeyId,
+		TeamID:  C.AppleTeamID,
+		AppID:   C.AppleAppID,
+		KeyID:   C.ApnsKeyID,
 		KeyPath: C.ApnsKeyPath,
 	})
 	if err != nil {
@@ -34,7 +34,7 @@ func main() {
 	gcal, err := gcal.NewClient(gcal.CalendarConfig{
 		GoogleCredentialsPath: C.GoogleCredsPath,
 		GoogleRefreshToken:    C.GoogleRefreshToken,
-		CalendarId:            C.GoogleCalendarId,
+		CalendarID:            C.GoogleCalendarID,
 		ApnsClient:            apns,
 		Store:                 store,
 	})
@@ -46,7 +46,7 @@ func main() {
 
 	s, err := server.NewServer(server.ServerConfig{
 		Port:        C.Port,
-		ApiKeysPath: C.ServerApiKeysPath,
+		APIKeysPath: C.ServerAPIKeysPath,
 		Store:       store,
 		ApnsClient:  apns,
 	})
