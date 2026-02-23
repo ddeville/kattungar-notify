@@ -1,3 +1,4 @@
+// Package server contains the main server logic for kattungar-notify.
 package server
 
 import (

@@ -1,3 +1,4 @@
+// Package client contains the client logic for the kattungar-notify CLI tools.
 package client
 
 import (

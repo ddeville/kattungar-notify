@@ -1,3 +1,4 @@
+// Package store contains logic to store data into a local sqlite database.
 package store
 
 import (

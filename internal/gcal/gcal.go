@@ -1,3 +1,4 @@
+// Package gcal contains logic to interface with Google's gcal API.
 package gcal
 
 import (

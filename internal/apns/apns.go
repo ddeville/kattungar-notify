@@ -1,3 +1,4 @@
+// Package apns contains logic to interface with Apple's APNS service.
 package apns
 
 import (

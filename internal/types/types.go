@@ -1,3 +1,4 @@
+// Package types contains various types used throughout the project.
 package types
 
 type Device struct {
