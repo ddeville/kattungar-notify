@@ -1,4 +1,4 @@
-FROM golang:1.23.4-bookworm@sha256:2e838582004fab0931693a3a84743ceccfbfeeafa8187e87291a1afea457ff7a AS builder
+FROM golang:1.26.0-trixie@sha256:889885d7cc1275935e3f9920aabadc5fadbe873f633d92a746f1bc401dd40f69 AS builder
 
 WORKDIR /usr/src/kattungar-notify
 
@@ -10,7 +10,7 @@ RUN go build -v -o exe ./cmd/server
 
 ##############
 
-FROM debian:bookworm-20241223-slim@sha256:d365f4920711a9074c4bcd178e8f457ee59250426441ab2a5f8106ed8fe948eb AS service
+FROM debian:trixie-20260202-slim@sha256:f6e2cfac5cf956ea044b4bd75e6397b4372ad88fe00908045e9a0d21712ae3ba AS service
 
 RUN apt-get update && \
     apt-get install -y ca-certificates && \
