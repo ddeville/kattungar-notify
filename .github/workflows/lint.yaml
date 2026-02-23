@@ -7,14 +7,14 @@ on:
       - ".github/workflows/lint.yaml"
       - "go.mod"
       - "go.sum"
-      - staticcheck.conf
+      - "staticcheck.conf"
   pull_request:
     paths:
       - "**/*.go"
       - ".github/workflows/lint.yaml"
       - "go.mod"
       - "go.sum"
-      - staticcheck.conf
+      - "staticcheck.conf"
 
 permissions:
   contents: read
@@ -22,6 +22,8 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      STATICCHECK_VERSION: "2026.1"
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -32,11 +34,27 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Run go vet
-        run: go vet ./...
+      - name: Cache Go build artifacts
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/go-build
+          key: ${{ runner.os }}-go-build-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
+      - name: Cache staticcheck binary
+        id: staticcheck-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/go/bin/staticcheck
+          key: ${{ runner.os }}-staticcheck-${{ env.STATICCHECK_VERSION }}
 
       - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+        if: steps.staticcheck-cache.outputs.cache-hit != 'true'
+        run: go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}
+
+      - name: Run go vet
+        run: go vet ./...
 
       - name: Run staticcheck
         run: staticcheck ./...
