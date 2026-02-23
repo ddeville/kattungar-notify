@@ -1,4 +1,4 @@
-name: Lint
+name: Run linters
 
 on:
   push:
@@ -15,6 +15,7 @@ on:
       - "go.mod"
       - "go.sum"
       - "staticcheck.conf"
+  workflow_dispatch:
 
 permissions:
   contents: read
