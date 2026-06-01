@@ -46,7 +46,7 @@ By default the chart uses an ephemeral `emptyDir` for sqlite data. This lets the
 app run without cluster storage, but registered devices and notification history
 are lost when the pod is replaced.
 
-Enable a `1Gi` `ReadWriteOnce` PVC when you want data to survive restarts:
+Enable a `100Mi` `ReadWriteOnce` PVC when you want data to survive restarts:
 
 ```sh
 helm upgrade --install kattungar-notify ./charts/kattungar-notify \

@@ -13,7 +13,7 @@ persistence:
   existingClaim: ""
   # Leave empty to use the cluster default StorageClass. Set to "-" for no storageClassName.
   storageClass: ""
-  size: 1Gi
+  size: 100Mi
 
 gateway:
   enabled: true
