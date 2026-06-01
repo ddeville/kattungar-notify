@@ -66,13 +66,25 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
         guard !isSendingToken else {
             return
         }
+        guard let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey) else {
+            hasSetupDeviceKey = false
+            return
+        }
+
+        isSendingToken = true
+
+        if let token = UserDefaults.standard.string(forKey: TokenDefaultsKey) {
+            sendTokenToServer(deviceKey: deviceKey, token: token, isManualTokenSend: true)
+            return
+        }
+
         guard let registerForRemoteNotifications else {
+            isSendingToken = false
             print("Cannot register for remote notifications before the application has finished launching")
             return
         }
 
         shouldNotifyAfterManualTokenSend = true
-        isSendingToken = true
         registerForRemoteNotifications()
     }
 
@@ -84,6 +96,10 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
         // Remove existing token so that we attempt to refresh next time if we fail retrieving
         UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
 
+        sendTokenToServer(deviceKey: deviceKey, token: token, isManualTokenSend: isManualTokenSend)
+    }
+
+    private func sendTokenToServer(deviceKey: String, token: String, isManualTokenSend: Bool) {
         registerToken(deviceKey: deviceKey, token: token) { result in
             DispatchQueue.main.async {
                 if isManualTokenSend {
