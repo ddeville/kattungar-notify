@@ -17,6 +17,18 @@ struct ContentView: View {
                     .imageScale(.large)
                     .foregroundStyle(.tint)
                 Text("Ready to Receive Notifications!")
+                Button {
+                    delegate.manuallySendTokenToServer()
+                } label: {
+                    HStack {
+                        if delegate.isSendingToken {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                        Text(delegate.isSendingToken ? "Sending Token..." : "Send Token to Server")
+                    }
+                }
+                .disabled(delegate.isSendingToken)
             }
             .padding()
         } else {

@@ -5,6 +5,8 @@
 //  Created by Damien Deville on 1/2/24.
 //
 
+import UserNotifications
+
 #if os(iOS)
 
 import UIKit
@@ -22,7 +24,6 @@ class ApplicationDelegate: CommonApplicationDelegate, UIApplicationDelegate {
 #elseif os(macOS)
 
 import Cocoa
-import UserNotifications
 
 typealias Application = NSApplication
 
@@ -39,6 +40,9 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
     fileprivate var registerForRemoteNotifications: (() -> Void)?
 
     @Published var hasSetupDeviceKey: Bool = false
+    @Published var isSendingToken: Bool = false
+
+    private var shouldNotifyAfterManualTokenSend = false
 
     func handleApplicationChange() {
         UNUserNotificationCenter.current().delegate = self
@@ -58,19 +62,42 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
         }
     }
 
+    func manuallySendTokenToServer() {
+        guard !isSendingToken else {
+            return
+        }
+        guard let registerForRemoteNotifications else {
+            print("Cannot register for remote notifications before the application has finished launching")
+            return
+        }
+
+        shouldNotifyAfterManualTokenSend = true
+        isSendingToken = true
+        registerForRemoteNotifications()
+    }
+
     @objc func application(_ application: Application, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
         let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey)!
+        let isManualTokenSend = shouldNotifyAfterManualTokenSend
 
         // Remove existing token so that we attempt to refresh next time if we fail retrieving
         UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
 
         registerToken(deviceKey: deviceKey, token: token) { result in
             DispatchQueue.main.async {
+                if isManualTokenSend {
+                    self.isSendingToken = false
+                    self.shouldNotifyAfterManualTokenSend = false
+                }
+
                 switch result {
-                case .success(_):
+                case .success(let (response, _)):
                     print("Successfully updated token")
                     UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
+                    if isManualTokenSend && response.statusCode == 200 {
+                        self.showTokenSentNotification()
+                    }
                 case .failure(let error):
                     if case URLSession.HTTPError.serverSideError(let statusCode) = error {
                         if statusCode == 401 {
@@ -86,7 +113,25 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
     }
 
     @objc func application(_ application: Application, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        if shouldNotifyAfterManualTokenSend {
+            isSendingToken = false
+            shouldNotifyAfterManualTokenSend = false
+        }
         print("Failed to register for notifications... \(error)")
+    }
+
+    private func showTokenSentNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Kattungar Notify"
+        content.body = "Token sent to server."
+        content.sound = .default
+
+        let request = UNNotificationRequest(identifier: "token-sent-\(UUID().uuidString)", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Failed to show token sent notification: \(error)")
+            }
+        }
     }
 }
 
