@@ -1,0 +1,14 @@
+Kattungar Notify has been installed.
+
+The deployment expects a Kubernetes secret named:
+  {{ include "kattungar-notify.secretName" . }}
+
+Required keys:
+  server-api-keys.json
+  apns-key-id
+  apns-key.p8
+  google-client-credentials.json
+  google-refresh-token
+  google-calendar-id
+
+Create it before deploying. The chart does not create this Secret.

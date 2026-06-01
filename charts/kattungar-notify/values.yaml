@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/ddeville/kattungar-notify
+  tag: ""
+  digest: ""
+
+resources: {}
+
+secret:
+  name: ""
+
+persistence:
+  existingClaim: ""
+  # Leave empty to use the cluster default StorageClass. Set to "-" for no storageClassName.
+  storageClass: ""
+  size: 1Gi
+
+gateway:
+  enabled: true
+  name: ""
+  namespace: ""
+  listenerName: ""
+  hostnames:
+    - kattungar-notify.local

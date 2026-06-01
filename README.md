@@ -1,5 +1,11 @@
 # kattungar-notify
 
+## Kubernetes deployment
+
+The repository includes a Helm chart at `charts/kattungar-notify`. See
+`charts/kattungar-notify/README.md` for image publishing, secret creation, and
+install commands.
+
 ## Server credentials
 
 ### Google Calendar

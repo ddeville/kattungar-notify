@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kattungar-notify.fullname" . }}
+  labels:
+    {{- include "kattungar-notify.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "kattungar-notify.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kattungar-notify.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: server
+          image: "{{ include "kattungar-notify.image" . }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: KATTUNGAR_STORE_PATH
+              value: /var/lib/sqlite/store.db
+            - name: KATTUNGAR_SERVER_API_KEYS_PATH
+              value: /var/lib/secrets/server-api-keys.json
+            - name: KATTUNGAR_APNS_KEY_PATH
+              value: /var/lib/secrets/apns-key.p8
+            - name: KATTUNGAR_APNS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kattungar-notify.secretName" . }}
+                  key: apns-key-id
+            - name: KATTUNGAR_GOOGLE_CREDS_PATH
+              value: /var/lib/secrets/google-client-credentials.json
+            - name: KATTUNGAR_GOOGLE_REFRESH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kattungar-notify.secretName" . }}
+                  key: google-refresh-token
+            - name: KATTUNGAR_GOOGLE_CALENDAR_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kattungar-notify.secretName" . }}
+                  key: google-calendar-id
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/sqlite
+            - name: secrets
+              mountPath: /var/lib/secrets
+              readOnly: true
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "kattungar-notify.pvcName" . }}
+        - name: secrets
+          secret:
+            secretName: {{ include "kattungar-notify.secretName" . }}
+            items:
+              - key: server-api-keys.json
+                path: server-api-keys.json
+              - key: apns-key.p8
+                path: apns-key.p8
+              - key: google-client-credentials.json
+                path: google-client-credentials.json
