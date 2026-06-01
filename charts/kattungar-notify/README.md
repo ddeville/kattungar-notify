@@ -36,9 +36,9 @@ kubectl -n kattungar-notify create secret generic kattungar-notify \
 `server-api-keys.json` must be a JSON array of admin API keys, matching what the
 server expects today.
 
-If you use a differently named Secret, set `secret.name`. Helm fails the
-install or upgrade if the Secret does not exist in the release namespace or if
-any required key is missing.
+If you use a differently named Secret, set `secret.name`. The chart references
+the Secret but does not create or validate it; create it directly or with an
+`ExternalSecret` before the pod needs to start.
 
 ## Persistence
 

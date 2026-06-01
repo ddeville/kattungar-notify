@@ -11,4 +11,5 @@ Required keys:
   google-refresh-token
   google-calendar-id
 
-Create it before deploying. The chart does not create this Secret.
+Create it directly or with an ExternalSecret. The chart does not create or
+validate this Secret.
