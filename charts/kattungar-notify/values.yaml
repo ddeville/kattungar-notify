@@ -9,6 +9,7 @@ secret:
   name: ""
 
 persistence:
+  enabled: false
   existingClaim: ""
   # Leave empty to use the cluster default StorageClass. Set to "-" for no storageClassName.
   storageClass: ""

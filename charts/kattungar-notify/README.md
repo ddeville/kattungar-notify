@@ -42,18 +42,22 @@ the Secret but does not create or validate it; create it directly or with an
 
 ## Persistence
 
-By default the chart creates a `1Gi` `ReadWriteOnce` PVC and leaves
-`storageClassName` unset, so Kubernetes uses the cluster default StorageClass.
-Choose a specific StorageClass at install time:
+By default the chart uses an ephemeral `emptyDir` for sqlite data. This lets the
+app run without cluster storage, but registered devices and notification history
+are lost when the pod is replaced.
+
+Enable a `1Gi` `ReadWriteOnce` PVC when you want data to survive restarts:
 
 ```sh
 helm upgrade --install kattungar-notify ./charts/kattungar-notify \
   --namespace kattungar-notify \
   --create-namespace \
+  --set persistence.enabled=true \
   --set persistence.storageClass=STORAGE_CLASS
 ```
 
-Set `persistence.storageClass=-` to render `storageClassName: ""`, or set
+When creating a PVC, leave `persistence.storageClass` empty to use the cluster
+default StorageClass, or set it to `-` to render `storageClassName: ""`. Set
 `persistence.existingClaim=CLAIM_NAME` to use a PVC managed outside this chart.
 
 ## Install
