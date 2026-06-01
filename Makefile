@@ -53,7 +53,7 @@ archive-ios:
 	xcodebuild archive -project "ios/KattungarNotify.xcodeproj" -scheme "Kattungar Notify" -configuration Release -destination generic/platform=iOS -archivePath build/ios/KattungarNotify.xcarchive -allowProvisioningUpdates
 
 publish-ios: archive-ios
-	xcodebuild -exportArchive -archivePath build/ios/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_ios.plist -exportPath build/ios -allowProvisioningUpdates
+	PATH=/usr/bin:/bin:/usr/sbin:/sbin xcodebuild -exportArchive -archivePath build/ios/KattungarNotify.xcarchive -exportOptionsPlist ios/export_options_ios.plist -exportPath build/ios -allowProvisioningUpdates
 
 ##### macOS #####
 
