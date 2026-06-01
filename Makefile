@@ -26,13 +26,18 @@ install-notify-cli: build-notify-cli
 
 ##### Server #####
 
-.PHONY: build-server run-server
+CHART_VERSION := $(shell awk '/^version:/ { print $$2; exit }' charts/kattungar-notify/Chart.yaml)
+SERVER_IMAGE ?= ghcr.io/ddeville/kattungar-notify
+SERVER_TAG ?= $(CHART_VERSION)
+SERVER_IMAGE_REF := $(SERVER_IMAGE):$(SERVER_TAG)
+
+.PHONY: build-server push-server
 
 build-server:
-	docker-compose -f docker-compose.yaml build
+	docker build -f manage/server.dockerfile --target service -t $(SERVER_IMAGE_REF) .
 
-run-server:
-	docker-compose -f docker-compose.yaml up
+push-server: build-server
+	docker push $(SERVER_IMAGE_REF)
 
 ##### iOS #####
 
