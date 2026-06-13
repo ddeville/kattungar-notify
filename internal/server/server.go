@@ -45,7 +45,12 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 	}
 
 	r := chi.NewRouter()
-	s := Server{cfg.Port, r, cfg.Store, cfg.ApnsClient}
+	s := Server{
+		port:   cfg.Port,
+		router: r,
+		store:  cfg.Store,
+		apns:   cfg.ApnsClient,
+	}
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -77,6 +82,10 @@ func NewServer(cfg ServerConfig) (*Server, error) {
 	// Sending a notification doesn't require authentication
 	r.Route("/notify", func(r chi.Router) {
 		r.Post("/", s.notify)
+	})
+
+	r.Route("/integrations/alertmanager", func(r chi.Router) {
+		r.Post("/", s.alertmanagerWebhook)
 	})
 
 	return &s, nil
@@ -271,6 +280,22 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := s.deliverNotification(notification); err != nil {
+		log.Printf("Cannot send notification: %v", err.message)
+		http.Error(w, err.message, err.status)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+type notificationError struct {
+	status  int
+	message string
+}
+
+func (s *Server) deliverNotification(notification types.Notification) *notificationError {
+	var err error
 	var device *types.Device
 	if len(notification.DeviceKey) > 0 {
 		device, err = s.store.GetDevice(notification.DeviceKey)
@@ -279,13 +304,11 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		log.Printf("Cannot retrieve device: %v", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return &notificationError{http.StatusInternalServerError, err.Error()}
 	}
 	if device == nil {
 		log.Printf("Unknown device key/name")
-		http.Error(w, "unknown device key/name", http.StatusBadRequest)
-		return
+		return &notificationError{http.StatusBadRequest, "unknown device key/name"}
 	}
 
 	notification.DeviceKey = device.Key
@@ -294,21 +317,18 @@ func (s *Server) notify(w http.ResponseWriter, r *http.Request) {
 	err = s.store.RecordNotification(notification)
 	if err != nil {
 		log.Printf("Cannot record notification: %v", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return &notificationError{http.StatusInternalServerError, err.Error()}
 	}
 
 	res, err := s.apns.Notify(device, notification)
 	if err != nil {
 		log.Printf("Cannot connect to APNs: %v", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return &notificationError{http.StatusInternalServerError, err.Error()}
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Request to APNs failed: %v (status code %v)", res.Reason, res.StatusCode)
-		http.Error(w, res.Reason, res.StatusCode)
-		return
+		return &notificationError{res.StatusCode, res.Reason}
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return nil
 }
