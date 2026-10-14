@@ -7,11 +7,11 @@
 
 import Foundation
 
-let TokenDefaultsKey = "kattungar-apns-token"
 let DeviceKeyDefaultsKey = "kattungar-device-key"
+let TokenRegistrationURL = URL(string: "https://notify.home.kattungar.net/device/token")!
 
 func registerToken(deviceKey: String, token: String, withCompletionHandler completionHandler: @escaping (URLSession.DataTaskResult) -> Void) {
-    var request = URLRequest(url: URL(string: "https://notify.home.kattungar.net/device/token")!)
+    var request = URLRequest(url: TokenRegistrationURL)
     request.httpMethod = "PUT"
     request.setValue("Bearer \(deviceKey)", forHTTPHeaderField: "Authorization")
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")

@@ -41,50 +41,94 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
 
     @Published var hasSetupDeviceKey: Bool = false
     @Published var isSendingToken: Bool = false
+    @Published var registrationStatus = "Enter a device key to register."
+    @Published var permissionStatus = "Checking…"
+    @Published private(set) var diagnosticEvents: [String] = []
 
     private var shouldNotifyAfterManualTokenSend = false
+
+    var diagnosticReport: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "unknown"
+        return """
+        Kattungar Notify \(version) (\(build))
+        OS: \(ProcessInfo.processInfo.operatingSystemVersionString)
+        Server: \(TokenRegistrationURL.absoluteString)
+        Notification permission: \(permissionStatus)
+        Status: \(registrationStatus)
+
+        \(diagnosticEvents.joined(separator: "\n"))
+        """
+    }
+
+    private func recordDiagnostic(_ message: String) {
+        diagnosticEvents.append("\(Date().formatted(date: .omitted, time: .standard)): \(message)")
+        if diagnosticEvents.count > 50 {
+            diagnosticEvents.removeFirst()
+        }
+    }
+
+    func refreshNotificationPermission() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                switch settings.authorizationStatus {
+                case .notDetermined: self.permissionStatus = "Not requested"
+                case .denied: self.permissionStatus = "Denied — enable notifications in Settings"
+                case .authorized: self.permissionStatus = "Authorized"
+                case .provisional: self.permissionStatus = "Provisional (quiet notifications)"
+                case .ephemeral: self.permissionStatus = "Ephemeral"
+                @unknown default: self.permissionStatus = "Unknown"
+                }
+            }
+        }
+    }
 
     func handleApplicationChange() {
         UNUserNotificationCenter.current().delegate = self
 
         // This will switch between the device key setup and regular view
         hasSetupDeviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey) != nil
+        refreshNotificationPermission()
 
-        // Let's get a token if we've never retrieved one before
-        if hasSetupDeviceKey && UserDefaults.standard.string(forKey: TokenDefaultsKey) == nil {
-            registerForRemoteNotifications!()
+        if hasSetupDeviceKey {
+            requestToken(isManual: false)
 
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-                if !success {
-                    print("Didn't get approval to send push notifications... \(String(describing: error))")
+                DispatchQueue.main.async {
+                    self.recordDiagnostic("Notification permission request: \(success ? "granted" : "not granted")")
+                    if let error {
+                        self.recordDiagnostic("Permission error: \(error.localizedDescription)")
+                    }
+                    self.refreshNotificationPermission()
                 }
             }
         }
     }
 
     func manuallySendTokenToServer() {
+        refreshNotificationPermission()
+        requestToken(isManual: true)
+    }
+
+    private func requestToken(isManual: Bool) {
         guard !isSendingToken else {
             return
         }
-        guard let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey) else {
+        guard UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey) != nil else {
             hasSetupDeviceKey = false
             return
         }
 
-        isSendingToken = true
-
-        if let token = UserDefaults.standard.string(forKey: TokenDefaultsKey) {
-            sendTokenToServer(deviceKey: deviceKey, token: token, isManualTokenSend: true)
-            return
-        }
-
         guard let registerForRemoteNotifications else {
-            isSendingToken = false
-            print("Cannot register for remote notifications before the application has finished launching")
+            registrationStatus = "Cannot register before the app finishes launching. Try again."
+            recordDiagnostic(registrationStatus)
             return
         }
 
-        shouldNotifyAfterManualTokenSend = true
+        isSendingToken = true
+        shouldNotifyAfterManualTokenSend = isManual
+        registrationStatus = "Waiting for a device token from Apple…"
+        recordDiagnostic("Requesting a current token from APNs")
         registerForRemoteNotifications()
     }
 
@@ -92,48 +136,50 @@ class CommonApplicationDelegate: NSObject, ObservableObject {
         let token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
         let deviceKey = UserDefaults.standard.string(forKey: DeviceKeyDefaultsKey)!
         let isManualTokenSend = shouldNotifyAfterManualTokenSend
-
-        // Remove existing token so that we attempt to refresh next time if we fail retrieving
-        UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
+        recordDiagnostic("Received APNs token (\(deviceToken.count) bytes)")
 
         sendTokenToServer(deviceKey: deviceKey, token: token, isManualTokenSend: isManualTokenSend)
     }
 
     private func sendTokenToServer(deviceKey: String, token: String, isManualTokenSend: Bool) {
+        registrationStatus = "Uploading token to server…"
+        recordDiagnostic("PUT \(TokenRegistrationURL.absoluteString)")
         registerToken(deviceKey: deviceKey, token: token) { result in
             DispatchQueue.main.async {
-                if isManualTokenSend {
-                    self.isSendingToken = false
-                    self.shouldNotifyAfterManualTokenSend = false
-                }
+                self.isSendingToken = false
+                self.shouldNotifyAfterManualTokenSend = false
 
                 switch result {
                 case .success(let (response, _)):
-                    print("Successfully updated token")
-                    UserDefaults.standard.set(token, forKey:TokenDefaultsKey)
+                    self.registrationStatus = "Token registered with server (HTTP \(response.statusCode))."
+                    self.recordDiagnostic(self.registrationStatus)
                     if isManualTokenSend && response.statusCode == 200 {
                         self.showTokenSentNotification()
                     }
                 case .failure(let error):
+                    self.registrationStatus = "Token upload failed: \(error.localizedDescription)"
                     if case URLSession.HTTPError.serverSideError(let statusCode) = error {
+                        self.registrationStatus = "Token upload failed: HTTP \(statusCode)."
                         if statusCode == 401 {
-                            print("Request failed as unauthorized, device key is likely wrong: \(error)")
-                            UserDefaults.standard.removeObject(forKey: TokenDefaultsKey)
+                            self.registrationStatus = "Server rejected the device key (HTTP 401). Check the key and server device record."
                             self.hasSetupDeviceKey = false
                         }
+                    } else if case URLSession.HTTPError.transportError(let underlyingError) = error {
+                        let networkError = underlyingError as NSError
+                        self.registrationStatus = "Token upload failed: \(networkError.localizedDescription) (\(networkError.domain) \(networkError.code))."
                     }
-                    print("Failed to make request to server \(error)")
+                    self.recordDiagnostic(self.registrationStatus)
                 }
             }
         }
     }
 
     @objc func application(_ application: Application, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        if shouldNotifyAfterManualTokenSend {
-            isSendingToken = false
-            shouldNotifyAfterManualTokenSend = false
-        }
-        print("Failed to register for notifications... \(error)")
+        isSendingToken = false
+        shouldNotifyAfterManualTokenSend = false
+        let registrationError = error as NSError
+        registrationStatus = "APNs registration failed: \(registrationError.localizedDescription) (\(registrationError.domain) \(registrationError.code))."
+        recordDiagnostic(registrationStatus)
     }
 
     private func showTokenSentNotification() {
